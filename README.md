@@ -26,12 +26,41 @@
   - Client
   - Server
   - It just works!
+- **Domain-Driven Design (DDD)** architecture
+  - Organized domain modules (`domains/auth/`)
+  - Clear separation of concerns (domain, application, infrastructure, presentation)
+  - Shared utilities and UI components
 - supabase-ssr. A package to configure Supabase Auth to use cookies
 - Password-based authentication block installed via the [Supabase UI Library](https://supabase.com/ui/docs/nextjs/password-based-auth)
 - Styling with [Tailwind CSS](https://tailwindcss.com)
 - Components with [shadcn/ui](https://ui.shadcn.com/)
 - Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
   - Environment variables automatically assigned to Vercel project
+
+## Project Structure
+
+This project follows **Domain-Driven Design (DDD)** principles:
+
+```
+├── domains/           # Domain modules
+│   └── auth/         # Authentication domain
+│       ├── domain/          # Business logic and entities
+│       ├── application/     # Use cases and services
+│       ├── infrastructure/  # Technical implementations
+│       └── presentation/    # UI components
+├── shared/           # Shared code
+│   ├── ui/          # Reusable UI components
+│   └── utils/       # Shared utilities
+├── infrastructure/   # Technical infrastructure
+│   ├── supabase/    # Supabase clients
+│   └── middleware.ts # Next.js middleware
+└── app/             # Next.js app router pages
+```
+
+For more details, see the README files in each directory:
+- [Auth Domain](./domains/auth/README.md)
+- [Shared](./shared/README.md)
+- [Infrastructure](./infrastructure/README.md)
 
 ## Demo
 

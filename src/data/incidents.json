@@ -1,0 +1,176 @@
+{
+  "incidents": [
+    {
+      "id": "1",
+      "distrito": "San Isidro",
+      "tipo": "Baches",
+      "prioridad": "Alta",
+      "estado": "Pendiente",
+      "fecha": "2024-01-15",
+      "imagen": "/images/bache1.jpg",
+      "comentarios": [
+        {
+          "id": "COM-01",
+          "autor": "Juan Pérez",
+          "cargo": "Inspector Municipal",
+          "fecha": "2024-01-15",
+          "mensaje": "Se ha registrado el incidente. Equipo técnico programado para evaluación."
+        },
+        {
+          "id": "COM-02",
+          "autor": "María Rodríguez",
+          "cargo": "Supervisora de Obras",
+          "fecha": "2024-01-16",
+          "mensaje": "Evaluación realizada. Se requiere intervención urgente."
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "distrito": "Miraflores",
+      "tipo": "Grietas",
+      "prioridad": "Media",
+      "estado": "En Proceso",
+      "fecha": "2024-01-16",
+      "imagen": "/images/grieta1.jpg",
+      "comentarios": [
+        {
+          "id": "COM-03",
+          "autor": "Carlos López",
+          "cargo": "Técnico de Mantenimiento",
+          "fecha": "2024-01-16",
+          "mensaje": "Iniciando trabajos de reparación."
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "distrito": "San Borja",
+      "tipo": "Huecos",
+      "prioridad": "Baja",
+      "estado": "Resuelto",
+      "fecha": "2024-01-14",
+      "imagen": "/images/hueco1.jpg",
+      "comentarios": [
+        {
+          "id": "COM-04",
+          "autor": "Pedro Sánchez",
+          "cargo": "Inspector de Vías",
+          "fecha": "2024-01-14",
+          "mensaje": "Hueco identificado en zona residencial."
+        },
+        {
+          "id": "COM-05",
+          "autor": "Ana Torres",
+          "cargo": "Supervisora",
+          "fecha": "2024-01-14",
+          "mensaje": "Reparación completada satisfactoriamente."
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "distrito": "La Molina",
+      "tipo": "Baches",
+      "prioridad": "Alta",
+      "estado": "Pendiente",
+      "fecha": "2024-01-17",
+      "imagen": "/images/bache2.jpg",
+      "comentarios": [
+        {
+          "id": "COM-06",
+          "autor": "Luis Vargas",
+          "cargo": "Técnico Municipal",
+          "fecha": "2024-01-17",
+          "mensaje": "Bache de gran tamaño, requiere atención inmediata."
+        }
+      ]
+    },
+    {
+      "id": "5",
+      "distrito": "Surco",
+      "tipo": "Grietas",
+      "prioridad": "Media",
+      "estado": "Resuelto",
+      "fecha": "2024-01-13",
+      "imagen": "/images/grieta2.jpg",
+      "comentarios": [
+        {
+          "id": "COM-07",
+          "autor": "Carmen López",
+          "cargo": "Ingeniera Civil",
+          "fecha": "2024-01-13",
+          "mensaje": "Grietas estructurales identificadas."
+        },
+        {
+          "id": "COM-08",
+          "autor": "Roberto Díaz",
+          "cargo": "Jefe de Obras",
+          "fecha": "2024-01-13",
+          "mensaje": "Reparación finalizada según protocolo."
+        }
+      ]
+    },
+    {
+      "id": "6",
+      "distrito": "San Miguel",
+      "tipo": "Baches",
+      "prioridad": "Alta",
+      "estado": "Pendiente",
+      "fecha": "2024-01-18",
+      "imagen": "/images/bache3.jpg",
+      "comentarios": [
+        {
+          "id": "COM-09",
+          "autor": "Jorge Ruiz",
+          "cargo": "Inspector de Calles",
+          "fecha": "2024-01-18",
+          "mensaje": "Bache reportado por vecinos, zona comercial."
+        }
+      ]
+    },
+    {
+      "id": "7",
+      "distrito": "Jesús María",
+      "tipo": "Grietas",
+      "prioridad": "Media",
+      "estado": "En Proceso",
+      "fecha": "2024-01-18",
+      "imagen": "/images/grieta3.jpg",
+      "comentarios": [
+        {
+          "id": "COM-10",
+          "autor": "María Palacios",
+          "cargo": "Supervisora de Mantenimiento",
+          "fecha": "2024-01-18",
+          "mensaje": "Iniciando trabajos de reparación en la zona."
+        }
+      ]
+    },
+    {
+      "id": "8",
+      "distrito": "Lince",
+      "tipo": "Huecos",
+      "prioridad": "Alta",
+      "estado": "Resuelto",
+      "fecha": "2024-01-19",
+      "imagen": "/images/hueco2.jpg",
+      "comentarios": [
+        {
+          "id": "COM-11",
+          "autor": "Daniel Castro",
+          "cargo": "Técnico de Vías",
+          "fecha": "2024-01-19",
+          "mensaje": "Reparación urgente completada."
+        },
+        {
+          "id": "COM-12",
+          "autor": "Sandra Mendoza",
+          "cargo": "Supervisora de Calidad",
+          "fecha": "2024-01-19",
+          "mensaje": "Verificación post-reparación satisfactoria."
+        }
+      ]
+    }
+  ]
+}
