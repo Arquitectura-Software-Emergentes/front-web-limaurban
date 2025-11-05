@@ -7,4 +7,5 @@ export const ROUTES = {
     DETAIL: (id: string) => `/incidentes/${id}`,
   },
   MUNICIPALIDAD: '/municipalidad',
+  MAPAS: '/mapas',
 } as const;
