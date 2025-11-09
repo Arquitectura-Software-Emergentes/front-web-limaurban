@@ -27,50 +27,34 @@ export default function AuthPage() {
         gsap.to(loginFormRef.current, {
           opacity: 0,
           duration: 0.3,
-          onComplete: () => {
-            setIsLogin(false);
-            gsap.fromTo(
-              registerFormRef.current,
-              { opacity: 0 },
-              { opacity: 1, duration: 0.3 }
-            );
-          },
+          onComplete: () => setIsLogin(false),
         });
       } else {
         gsap.to(registerFormRef.current, {
           opacity: 0,
           duration: 0.3,
-          onComplete: () => {
-            setIsLogin(true);
-            gsap.fromTo(
-              loginFormRef.current,
-              { opacity: 0 },
-              { opacity: 1, duration: 0.3 }
-            );
-          },
+          onComplete: () => setIsLogin(true),
         });
       }
     } else {
       if (isLogin) {
-        const tl = gsap.timeline();
-        tl.to(loginFormRef.current, { opacity: 0, x: -50, duration: 0.4 })
-          .to(logoRef.current, { x: "50%", duration: 0.6, ease: "power2.inOut" }, "-=0.2")
-          .call(() => setIsLogin(false))
-          .fromTo(
-            registerFormRef.current,
-            { opacity: 0, x: -50 },
-            { opacity: 1, x: 0, duration: 0.4 }
-          );
+        gsap.to(loginFormRef.current, { 
+          opacity: 0, 
+          duration: 0.4,
+          onComplete: () => {
+            setIsLogin(false);
+            gsap.fromTo(registerFormRef.current, { opacity: 0 }, { opacity: 1, duration: 0.4 });
+          }
+        });
       } else {
-        const tl = gsap.timeline();
-        tl.to(registerFormRef.current, { opacity: 0, x: -50, duration: 0.4 })
-          .to(logoRef.current, { x: 0, duration: 0.6, ease: "power2.inOut" }, "-=0.2")
-          .call(() => setIsLogin(true))
-          .fromTo(
-            loginFormRef.current,
-            { opacity: 0, x: -50 },
-            { opacity: 1, x: 0, duration: 0.4 }
-          );
+        gsap.to(registerFormRef.current, { 
+          opacity: 0, 
+          duration: 0.4,
+          onComplete: () => {
+            setIsLogin(true);
+            gsap.fromTo(loginFormRef.current, { opacity: 0 }, { opacity: 1, duration: 0.4 });
+          }
+        });
       }
     }
   };
@@ -121,15 +105,21 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#132D46] via-[#0F2537] to-[#132D46] p-4">
-      <div className="w-full max-w-6xl flex flex-col md:flex-row items-center justify-center gap-8">
+      <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 items-center gap-8 md:gap-16">
         
-        {/* Register Form - Aparece a la IZQUIERDA en desktop */}
-        {!isLogin && (
+        {/* Register Form - Columna 1 cuando !isLogin */}
+        <div 
+          className="w-full max-w-md mx-auto md:mx-0 md:justify-self-end"
+          style={{ 
+            display: isLogin ? 'none' : 'block',
+            gridColumn: isLogin ? 'auto' : '1'
+          }}
+        >
           <form
-            ref={registerFormRef}
-            onSubmit={handleRegisterSubmit}
-            className="md:flex-1 bg-white rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-md order-2 md:order-1"
-          >
+              ref={registerFormRef}
+              onSubmit={handleRegisterSubmit}
+              className="bg-white rounded-2xl shadow-2xl p-6 md:p-8 w-full"
+            >
             <div className="text-center mb-6">
               <Image
                 src="/images/logo_sin_fondo_oscuro.png"
@@ -282,32 +272,41 @@ export default function AuthPage() {
               </div>
             </div>
           </form>
-        )}
+        </div>
 
-        {/* Logo - Centro en mobile, orden 2 en desktop */}
+        {/* Logo - Columna 1 cuando isLogin, Columna 2 cuando !isLogin */}
         <div
           ref={logoRef}
-          className="md:flex-1 flex flex-col items-center justify-center order-1 md:order-2"
+          className="flex flex-col items-center justify-center md:px-8"
+          style={{
+            gridColumn: isLogin ? '1' : '2'
+          }}
         >
           <Image
             src="/images/logo_sin_fondo_claro.png"
             alt="LimaUrban"
             width={200}
             height={200}
-            className="object-contain mb-4 w-32 md:w-48 lg:w-64"
+            className="object-contain mb-4 w-32 md:w-48 lg:w-56"
           />
           <h1 className="text-white text-3xl md:text-4xl lg:text-5xl font-bold text-center">
             LimaUrban
           </h1>
         </div>
 
-        {/* Login Form - Aparece a la DERECHA en desktop */}
-        {isLogin && (
+        {/* Login Form - Columna 2 cuando isLogin */}
+        <div 
+          className="w-full max-w-md mx-auto md:mx-0 md:justify-self-start"
+          style={{ 
+            display: isLogin ? 'block' : 'none',
+            gridColumn: isLogin ? '2' : 'auto'
+          }}
+        >
           <form
-            ref={loginFormRef}
-            onSubmit={handleLoginSubmit}
-            className="md:flex-1 bg-white rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-md order-2 md:order-3"
-          >
+              ref={loginFormRef}
+              onSubmit={handleLoginSubmit}
+              className="bg-white rounded-2xl shadow-2xl p-6 md:p-8 w-full"
+            >
             <div className="text-center mb-6">
               <Image
                 src="/images/logo_sin_fondo_oscuro.png"
@@ -384,7 +383,7 @@ export default function AuthPage() {
               </div>
             </div>
           </form>
-        )}
+        </div>
       </div>
     </div>
   );
