@@ -7,6 +7,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useAuthAnimations } from "@/hooks/useAuthAnimations";
 import { useFormValidation } from "@/hooks/useFormValidation";
 import { PasswordRequirements } from "@/components/auth/PasswordRequirements";
+import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 import { UserType } from "@/types";
 import { loginSchema, registerSchema, passwordSchema } from "@/types/schemas";
 import { toast } from "sonner";
@@ -121,165 +123,124 @@ export default function AuthPage() {
             </div>
 
             <div className="space-y-4">
-              <div>
-                <label htmlFor="fullName" className="block text-sm font-medium text-slate-700 mb-1">
-                  Nombre completo
-                </label>
-                <div className="relative">
-                  <UserCircle className="absolute left-3 top-1/2 -translate-y-1/2" size={18} color="#00C48E" />
-                  <input
-                    id="fullName"
-                    name="fullName"
-                    type="text"
-                    required
-                    placeholder="Juan Pérez"
-                    className="pl-10 pr-4 py-2.5 block w-full rounded-lg border border-slate-300 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00C48E] focus:border-transparent"
-                  />
-                </div>
-              </div>
+              <Input
+                id="fullName"
+                name="fullName"
+                type="text"
+                label="Nombre completo"
+                placeholder="Juan Pérez"
+                required
+                icon={<UserCircle size={18} color="#00C48E" />}
+              />
 
-              <div>
-                <label htmlFor="register-email" className="block text-sm font-medium text-slate-700 mb-1">
-                  Correo electrónico
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2" size={18} color="#00C48E" />
-                  <input
-                    id="register-email"
-                    name="email"
-                    type="email"
-                    required
-                    placeholder="tu@email.com"
-                    className={`pl-10 pr-4 py-2.5 block w-full rounded-lg border text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:border-transparent ${
-                      registerValidation.shouldShowError("email")
-                        ? "border-red-500 focus:ring-red-500"
-                        : "border-slate-300 focus:ring-[#00C48E]"
-                    }`}
-                    onChange={(e) =>
-                      registerValidation.validateField(
-                        "email",
-                        e.target.value,
-                        z.string().email()
-                      )
-                    }
-                    onBlur={() => registerValidation.handleBlur("email")}
-                  />
-                </div>
-                {registerValidation.shouldShowError("email") && (
-                  <p className="mt-1 text-xs text-red-600">
-                    {registerValidation.getError("email")}
-                  </p>
-                )}
-              </div>
+              <Input
+                id="register-email"
+                name="email"
+                type="email"
+                label="Correo electrónico"
+                placeholder="tu@email.com"
+                required
+                icon={<Mail size={18} color="#00C48E" />}
+                error={registerValidation.getError("email")}
+                showError={!!registerValidation.shouldShowError("email")}
+                onChange={(e) =>
+                  registerValidation.validateField(
+                    "email",
+                    e.target.value,
+                    z.string().email("Ingresa un correo electrónico válido")
+                  )
+                }
+                onBlur={() => registerValidation.handleBlur("email")}
+              />
 
-              <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-1">
-                  Teléfono (opcional)
-                </label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2" size={18} color="#00C48E" />
-                  <input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    placeholder="987654321"
-                    className="pl-10 pr-4 py-2.5 block w-full rounded-lg border border-slate-300 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00C48E] focus:border-transparent"
-                  />
-                </div>
-              </div>
+              <Input
+                id="phone"
+                name="phone"
+                type="tel"
+                label="Teléfono (opcional)"
+                placeholder="987654321"
+                icon={<Phone size={18} color="#00C48E" />}
+              />
 
-              <div>
-                <label htmlFor="userType" className="block text-sm font-medium text-slate-700 mb-1">
-                  Tipo de usuario
-                </label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2" size={18} color="#00C48E" />
-                  <select
-                    id="userType"
-                    name="userType"
-                    required
-                    defaultValue="CITIZEN"
-                    className="pl-10 pr-4 py-2.5 block w-full rounded-lg border border-slate-300 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00C48E] focus:border-transparent appearance-none bg-white"
-                  >
-                    <option value="CITIZEN">Ciudadano</option>
-                    <option value="MUNICIPALITY_STAFF">Personal Municipal</option>
-                  </select>
-                </div>
-              </div>
+              <Select
+                id="userType"
+                name="userType"
+                label="Tipo de usuario"
+                required
+                defaultValue="CITIZEN"
+                icon={<User size={18} color="#00C48E" />}
+                options={[
+                  { value: "CITIZEN", label: "Ciudadano" },
+                  { value: "MUNICIPALITY_STAFF", label: "Personal Municipal" }
+                ]}
+              />
 
-              <div>
-                <label htmlFor="register-password" className="block text-sm font-medium text-slate-700 mb-1">
-                  Contraseña
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2" size={18} color="#00C48E" />
-                  <input
-                    id="register-password"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    required
-                    placeholder="••••••••"
-                    className={`pl-10 pr-12 py-2.5 block w-full rounded-lg border text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:border-transparent ${
-                      registerValidation.shouldShowError("password")
-                        ? "border-red-500 focus:ring-red-500"
-                        : "border-slate-300 focus:ring-[#00C48E]"
-                    }`}
-                    onChange={(e) => {
-                      setRegisterPasswordValue(e.target.value);
-                      registerValidation.validateField(
-                        "password",
-                        e.target.value,
-                        passwordSchema
-                      );
-                    }}
-                    onFocus={() => setShowPasswordRequirements(true)}
-                    onBlur={() => {
-                      registerValidation.handleBlur("password");
-                      setShowPasswordRequirements(false);
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#00C48E] transition-colors"
-                  >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
+              <div className="relative">
+                <Input
+                  id="register-password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  label="Contraseña"
+                  placeholder="••••••••"
+                  required
+                  icon={<Lock size={18} color="#00C48E" />}
+                  rightIcon={
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="text-slate-400 hover:text-[#00C48E] transition-colors"
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  }
+                  error={registerValidation.getError("password")}
+                  showError={!!registerValidation.shouldShowError("password") && !showPasswordRequirements}
+                  onChange={(e) => {
+                    setRegisterPasswordValue(e.target.value);
+                    registerValidation.validateField("password", e.target.value, passwordSchema);
+                  }}
+                  onFocus={() => setShowPasswordRequirements(true)}
+                  onBlur={() => {
+                    registerValidation.handleBlur("password");
+                    setShowPasswordRequirements(false);
+                  }}
+                />
                 <PasswordRequirements 
                   password={registerPasswordValue} 
                   show={showPasswordRequirements} 
                 />
-                {registerValidation.shouldShowError("password") && !showPasswordRequirements && (
-                  <p className="mt-1 text-xs text-red-600">
-                    {registerValidation.getError("password")}
-                  </p>
-                )}
               </div>
 
-              <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700 mb-1">
-                  Confirmar contraseña
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2" size={18} color="#00C48E" />
-                  <input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    required
-                    placeholder="••••••••"
-                    className="pl-10 pr-12 py-2.5 block w-full rounded-lg border border-slate-300 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00C48E] focus:border-transparent"
-                  />
+              <Input
+                id="confirmPassword"
+                name="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                label="Confirmar contraseña"
+                placeholder="••••••••"
+                required
+                icon={<Lock size={18} color="#00C48E" />}
+                rightIcon={
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#00C48E] transition-colors"
+                    className="text-slate-400 hover:text-[#00C48E] transition-colors"
                   >
                     {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
-                </div>
-              </div>
+                }
+                error={registerValidation.getError("confirmPassword")}
+                showError={!!registerValidation.shouldShowError("confirmPassword")}
+                onChange={(e) => {
+                  if (e.target.value && registerPasswordValue) {
+                    if (e.target.value !== registerPasswordValue) {
+                      registerValidation.setError("confirmPassword", "Las contraseñas no coinciden");
+                    } else {
+                      registerValidation.clearFieldError("confirmPassword");
+                    }
+                  }
+                }}
+                onBlur={() => registerValidation.handleBlur("confirmPassword")}
+              />
 
               <button
                 type="submit"
@@ -351,63 +312,44 @@ export default function AuthPage() {
             </div>
 
             <div className="space-y-4">
-              <div>
-                <label htmlFor="login-email" className="block text-sm font-medium text-slate-700 mb-1">
-                  Correo electrónico
-                </label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2" size={18} color="#00C48E" />
-                  <input
-                    id="login-email"
-                    name="email"
-                    type="email"
-                    required
-                    placeholder="tu@email.com"
-                    className={`pl-10 pr-4 py-2.5 block w-full rounded-lg border text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:border-transparent ${
-                      loginValidation.shouldShowError("email")
-                        ? "border-red-500 focus:ring-red-500"
-                        : "border-slate-300 focus:ring-[#00C48E]"
-                    }`}
-                    onChange={(e) =>
-                      loginValidation.validateField(
-                        "email",
-                        e.target.value,
-                        z.string().email()
-                      )
-                    }
-                    onBlur={() => loginValidation.handleBlur("email")}
-                  />
-                </div>
-                {loginValidation.shouldShowError("email") && (
-                  <p className="mt-1 text-xs text-red-600">
-                    {loginValidation.getError("email")}
-                  </p>
-                )}
-              </div>
+              <Input
+                id="login-email"
+                name="email"
+                type="email"
+                label="Correo electrónico"
+                placeholder="tu@email.com"
+                required
+                icon={<User size={18} color="#00C48E" />}
+                error={loginValidation.getError("email")}
+                showError={!!loginValidation.shouldShowError("email")}
+                onChange={(e) =>
+                  loginValidation.validateField(
+                    "email",
+                    e.target.value,
+                    z.string().email("Ingresa un correo electrónico válido")
+                  )
+                }
+                onBlur={() => loginValidation.handleBlur("email")}
+              />
 
-              <div>
-                <label htmlFor="login-password" className="block text-sm font-medium text-slate-700 mb-1">
-                  Contraseña
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2" size={18} color="#00C48E" />
-                  <input
-                    id="login-password"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    required
-                    placeholder="••••••••"
-                    className="pl-10 pr-12 py-2.5 block w-full rounded-lg border border-slate-300 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00C48E] focus:border-transparent"
-                  />
+              <Input
+                id="login-password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                label="Contraseña"
+                placeholder="••••••••"
+                required
+                icon={<Lock size={18} color="#00C48E" />}
+                rightIcon={
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#00C48E] transition-colors"
+                    className="text-slate-400 hover:text-[#00C48E] transition-colors"
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
-                </div>
-              </div>
+                }
+              />
 
               <button
                 type="submit"

@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { createClient } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
-import { UserType, UserInsert } from '@/types';
+import { login as loginAction, register as registerAction, logout as logoutAction } from '@/actions/auth.actions';
+import { UserType } from '@/types';
 
 interface LoginCredentials {
   email: string;
@@ -17,82 +16,57 @@ interface RegisterData {
   userType: UserType;
 }
 
-interface AuthError {
-  message: string;
-}
-
 export function useAuth() {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const login = async ({ email, password }: LoginCredentials) => {
+  const login = async (credentials: LoginCredentials) => {
     setError(null);
     setLoading(true);
 
     try {
-      const supabase = createClient();
+      const result = await loginAction(credentials);
       
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (signInError) throw signInError;
+      if (!result.success) {
+        const errorMsg = result.error || 'Error al iniciar sesión';
+        setError(errorMsg);
+        toast.error(errorMsg);
+        return { success: false, error: errorMsg };
+      }
 
       toast.success('Inicio de sesión exitoso');
-      router.push('/dashboard');
-      return { success: true, user: data.user };
+      return { success: true };
     } catch (err) {
-      const authError = err as AuthError;
-      setError(authError.message);
-      toast.error(authError.message);
-      return { success: false, error: authError.message };
+      const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
+      setError(errorMessage);
+      toast.error(errorMessage);
+      return { success: false, error: errorMessage };
     } finally {
       setLoading(false);
     }
   };
 
-  const register = async ({ email, password, fullName, phone, userType }: RegisterData) => {
+  const register = async (data: RegisterData) => {
     setError(null);
     setLoading(true);
 
     try {
-      const supabase = createClient();
+      const result = await registerAction(data);
 
-      const { data: authData, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-
-      if (signUpError) throw signUpError;
-      if (!authData.user) throw new Error('No se pudo crear el usuario');
-
-      const userInsert: UserInsert = {
-        id: authData.user.id,
-        full_name: fullName,
-        phone: phone || null,
-        user_type: userType,
-        is_active: true,
-      };
-
-      const { error: insertError } = await supabase
-        .from('users')
-        .insert(userInsert);
-
-      if (insertError) {
-        await supabase.auth.signOut();
-        throw new Error(`Error al crear el perfil: ${insertError.message}`);
+      if (!result.success) {
+        const errorMsg = result.error || 'Error al crear cuenta';
+        setError(errorMsg);
+        toast.error(errorMsg);
+        return { success: false, error: errorMsg };
       }
 
-      toast.success('Cuenta creada exitosamente. Redirigiendo al login...');
-      setTimeout(() => router.push('/auth'), 1500);
-      return { success: true, user: authData.user };
+      toast.success(result.message || 'Cuenta creada exitosamente');
+      return { success: true };
     } catch (err) {
-      const authError = err as AuthError;
-      setError(authError.message);
-      toast.error(authError.message);
-      return { success: false, error: authError.message };
+      const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
+      setError(errorMessage);
+      toast.error(errorMessage);
+      return { success: false, error: errorMessage };
     } finally {
       setLoading(false);
     }
@@ -101,14 +75,12 @@ export function useAuth() {
   const logout = async () => {
     setLoading(true);
     try {
-      const supabase = createClient();
-      await supabase.auth.signOut();
+      await logoutAction();
       toast.success('Sesión cerrada correctamente');
-      router.push('/auth');
     } catch (err) {
-      const authError = err as AuthError;
-      setError(authError.message);
-      toast.error('Error al cerrar sesión');
+      const errorMessage = err instanceof Error ? err.message : 'Error al cerrar sesión';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
