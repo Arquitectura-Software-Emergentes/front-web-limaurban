@@ -8,7 +8,7 @@ interface PageProps {
   params: { id: string };
 }
 
-export default async function IncidentePage(props: PageProps) {
+export default async function IncidentDetailPage(props: PageProps) {
   const params = await Promise.resolve(props.params);
   const incidente = incidentsData.incidents.find(inc => inc.id === params.id);
 

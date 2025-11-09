@@ -75,7 +75,7 @@ export default function IncidentsTable() {
             {filteredIncidents.map((incident) => (
               <tr 
                 key={incident.id}
-                onClick={() => router.push(ROUTES.INCIDENTES.DETAIL(incident.id))}
+                onClick={() => router.push(ROUTES.INCIDENTS.DETAIL(incident.id))}
                 className="cursor-pointer hover:bg-[#1E2736] transition-colors"
               >
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-[#D9D9D9]">

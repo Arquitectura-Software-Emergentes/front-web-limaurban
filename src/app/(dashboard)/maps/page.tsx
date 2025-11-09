@@ -1,7 +1,7 @@
 import React from 'react';
 import MapboxMap from '@/components/map/MapboxMap';
 
-export default function MapasPage() {
+export default function MapsPage() {
   return (
     <div className="w-full max-w-7xl mx-auto p-8">
       <h1 className="text-2xl font-bold text-white mb-6">Mapa de Incidentes</h1>
