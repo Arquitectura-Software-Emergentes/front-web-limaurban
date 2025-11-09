@@ -55,19 +55,18 @@ export async function updateSession(request: NextRequest) {
   const user = data?.claims;
 
   // Rutas que NO requieren autenticación
-  const isLoginRoute = request.nextUrl.pathname === '/login';
-  const isAuthRoute = request.nextUrl.pathname.startsWith('/auth/');
+  const isAuthRoute = request.nextUrl.pathname === '/auth';
   const isPublicRoute = request.nextUrl.pathname === '/';
 
-  // Si no hay usuario Y NO está en rutas públicas → redirigir a login
-  if (!user && !isLoginRoute && !isAuthRoute && !isPublicRoute) {
+  // Si no hay usuario Y NO está en rutas públicas → redirigir a /auth
+  if (!user && !isAuthRoute && !isPublicRoute) {
     const url = request.nextUrl.clone();
-    url.pathname = "/login";
+    url.pathname = "/auth";
     return NextResponse.redirect(url);
   }
 
-  // Si hay usuario Y está en /login → redirigir al dashboard
-  if (user && isLoginRoute) {
+  // Si hay usuario Y está en /auth → redirigir al dashboard
+  if (user && isAuthRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
     return NextResponse.redirect(url);

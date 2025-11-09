@@ -86,7 +86,7 @@ export function useAuth() {
       }
 
       toast.success('Cuenta creada exitosamente. Redirigiendo al login...');
-      setTimeout(() => router.push('/login'), 1500);
+      setTimeout(() => router.push('/auth'), 1500);
       return { success: true, user: authData.user };
     } catch (err) {
       const authError = err as AuthError;
@@ -104,7 +104,7 @@ export function useAuth() {
       const supabase = createClient();
       await supabase.auth.signOut();
       toast.success('Sesión cerrada correctamente');
-      router.push('/login');
+      router.push('/auth');
     } catch (err) {
       const authError = err as AuthError;
       setError(authError.message);
