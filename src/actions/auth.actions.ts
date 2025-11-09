@@ -37,9 +37,14 @@ export async function login(credentials: LoginCredentials) {
 export async function register(data: RegisterData) {
   const supabase = await createClient();
 
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+
   const { data: authData, error: signUpError } = await supabase.auth.signUp({
     email: data.email,
     password: data.password,
+    options: {
+      emailRedirectTo: `${baseUrl}/auth/confirm?next=/dashboard`,
+    },
   });
 
   if (signUpError) {
