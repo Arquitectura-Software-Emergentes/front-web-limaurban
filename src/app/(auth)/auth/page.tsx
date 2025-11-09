@@ -5,15 +5,23 @@ import Image from "next/image";
 import { User, Lock, Eye, EyeOff, Mail, Phone, UserCircle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useAuthAnimations } from "@/hooks/useAuthAnimations";
+import { useFormValidation } from "@/hooks/useFormValidation";
+import { PasswordRequirements } from "@/components/auth/PasswordRequirements";
 import { UserType } from "@/types";
-import { loginSchema, registerSchema } from "@/types/schemas";
+import { loginSchema, registerSchema, passwordSchema } from "@/types/schemas";
 import { toast } from "sonner";
+import { z } from "zod";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [registerPasswordValue, setRegisterPasswordValue] = useState("");
+  const [showPasswordRequirements, setShowPasswordRequirements] = useState(false);
   const { login, register, loading } = useAuth();
+
+  const loginValidation = useFormValidation();
+  const registerValidation = useFormValidation();
 
   const logoRef = useRef<HTMLDivElement>(null);
   const loginFormRef = useRef<HTMLFormElement>(null);
@@ -22,6 +30,10 @@ export default function AuthPage() {
   const handleModeChange = () => {
     setShowPassword(false);
     setShowConfirmPassword(false);
+    setRegisterPasswordValue("");
+    setShowPasswordRequirements(false);
+    loginValidation.clearErrors();
+    registerValidation.clearErrors();
   };
 
   const { toggleMode } = useAuthAnimations({
@@ -138,9 +150,26 @@ export default function AuthPage() {
                     type="email"
                     required
                     placeholder="tu@email.com"
-                    className="pl-10 pr-4 py-2.5 block w-full rounded-lg border border-slate-300 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00C48E] focus:border-transparent"
+                    className={`pl-10 pr-4 py-2.5 block w-full rounded-lg border text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:border-transparent ${
+                      registerValidation.shouldShowError("email")
+                        ? "border-red-500 focus:ring-red-500"
+                        : "border-slate-300 focus:ring-[#00C48E]"
+                    }`}
+                    onChange={(e) =>
+                      registerValidation.validateField(
+                        "email",
+                        e.target.value,
+                        z.string().email()
+                      )
+                    }
+                    onBlur={() => registerValidation.handleBlur("email")}
                   />
                 </div>
+                {registerValidation.shouldShowError("email") && (
+                  <p className="mt-1 text-xs text-red-600">
+                    {registerValidation.getError("email")}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -190,7 +219,24 @@ export default function AuthPage() {
                     type={showPassword ? "text" : "password"}
                     required
                     placeholder="••••••••"
-                    className="pl-10 pr-12 py-2.5 block w-full rounded-lg border border-slate-300 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00C48E] focus:border-transparent"
+                    className={`pl-10 pr-12 py-2.5 block w-full rounded-lg border text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:border-transparent ${
+                      registerValidation.shouldShowError("password")
+                        ? "border-red-500 focus:ring-red-500"
+                        : "border-slate-300 focus:ring-[#00C48E]"
+                    }`}
+                    onChange={(e) => {
+                      setRegisterPasswordValue(e.target.value);
+                      registerValidation.validateField(
+                        "password",
+                        e.target.value,
+                        passwordSchema
+                      );
+                    }}
+                    onFocus={() => setShowPasswordRequirements(true)}
+                    onBlur={() => {
+                      registerValidation.handleBlur("password");
+                      setShowPasswordRequirements(false);
+                    }}
                   />
                   <button
                     type="button"
@@ -200,6 +246,15 @@ export default function AuthPage() {
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
+                <PasswordRequirements 
+                  password={registerPasswordValue} 
+                  show={showPasswordRequirements} 
+                />
+                {registerValidation.shouldShowError("password") && !showPasswordRequirements && (
+                  <p className="mt-1 text-xs text-red-600">
+                    {registerValidation.getError("password")}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -308,9 +363,26 @@ export default function AuthPage() {
                     type="email"
                     required
                     placeholder="tu@email.com"
-                    className="pl-10 pr-4 py-2.5 block w-full rounded-lg border border-slate-300 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00C48E] focus:border-transparent"
+                    className={`pl-10 pr-4 py-2.5 block w-full rounded-lg border text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:border-transparent ${
+                      loginValidation.shouldShowError("email")
+                        ? "border-red-500 focus:ring-red-500"
+                        : "border-slate-300 focus:ring-[#00C48E]"
+                    }`}
+                    onChange={(e) =>
+                      loginValidation.validateField(
+                        "email",
+                        e.target.value,
+                        z.string().email()
+                      )
+                    }
+                    onBlur={() => loginValidation.handleBlur("email")}
                   />
                 </div>
+                {loginValidation.shouldShowError("email") && (
+                  <p className="mt-1 text-xs text-red-600">
+                    {loginValidation.getError("email")}
+                  </p>
+                )}
               </div>
 
               <div>
