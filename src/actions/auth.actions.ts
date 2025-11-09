@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { UserType, UserInsert } from "@/types";
+import { UserType } from "@/types";
 
 interface LoginCredentials {
   email: string;
@@ -44,6 +44,11 @@ export async function register(data: RegisterData) {
     password: data.password,
     options: {
       emailRedirectTo: `${baseUrl}/auth/confirm?next=/dashboard`,
+      data: {
+        full_name: data.fullName,
+        phone: data.phone || null,
+        user_type: data.userType,
+      },
     },
   });
 
@@ -55,24 +60,7 @@ export async function register(data: RegisterData) {
     return { success: false, error: "No se pudo crear el usuario" };
   }
 
-  const userInsert: UserInsert = {
-    id: authData.user.id,
-    full_name: data.fullName,
-    phone: data.phone || null,
-    user_type: data.userType,
-    is_active: true,
-  };
-
-  const { error: insertError } = await supabase
-    .from("users")
-    .insert(userInsert);
-
-  if (insertError) {
-    await supabase.auth.admin.deleteUser(authData.user.id);
-    return { success: false, error: `Error al crear el perfil: ${insertError.message}` };
-  }
-
-  return { success: true, message: "Cuenta creada exitosamente" };
+  return { success: true, message: "Cuenta creada exitosamente. Revisa tu correo para confirmar tu cuenta." };
 }
 
 export async function logout() {
