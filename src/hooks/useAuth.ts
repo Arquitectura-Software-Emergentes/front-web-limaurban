@@ -61,6 +61,10 @@ export function useAuth() {
       }
 
       toast.success(result.message || 'Cuenta creada exitosamente');
+      
+      // Redirigir a la página de éxito después del registro
+      window.location.href = '/auth/signup-success';
+      
       return { success: true };
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error desconocido';

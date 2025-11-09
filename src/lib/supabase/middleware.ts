@@ -56,17 +56,24 @@ export async function updateSession(request: NextRequest) {
 
   // Rutas que NO requieren autenticación
   const isAuthRoute = request.nextUrl.pathname === '/auth';
+  const isAuthConfirmRoute = request.nextUrl.pathname.startsWith('/auth/confirm');
+  const isAuthSuccessRoute = request.nextUrl.pathname === '/auth/signup-success';
+  const isAuthErrorRoute = request.nextUrl.pathname === '/auth/error';
   const isPublicRoute = request.nextUrl.pathname === '/';
 
+  // Rutas públicas que no requieren autenticación
+  const publicRoutes = [isAuthRoute, isAuthConfirmRoute, isAuthSuccessRoute, isAuthErrorRoute, isPublicRoute];
+  const isPublicAccess = publicRoutes.some(Boolean);
+
   // Si no hay usuario Y NO está en rutas públicas → redirigir a /auth
-  if (!user && !isAuthRoute && !isPublicRoute) {
+  if (!user && !isPublicAccess) {
     const url = request.nextUrl.clone();
     url.pathname = "/auth";
     return NextResponse.redirect(url);
   }
 
-  // Si hay usuario Y está en /auth → redirigir al dashboard
-  if (user && isAuthRoute) {
+  // Si hay usuario Y está en /auth (pero NO en confirm/error/success) → redirigir al dashboard
+  if (user && isAuthRoute && !isAuthConfirmRoute && !isAuthErrorRoute && !isAuthSuccessRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
     return NextResponse.redirect(url);
