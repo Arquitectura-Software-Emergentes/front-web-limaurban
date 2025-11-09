@@ -51,6 +51,21 @@ export function useFormValidation() {
     setTouchedFields(new Set());
   };
 
+  const setError = (fieldName: string, message: string) => {
+    setErrors((prev) => ({
+      ...prev,
+      [fieldName]: { message },
+    }));
+  };
+
+  const clearFieldError = (fieldName: string) => {
+    setErrors((prev) => {
+      const newErrors = { ...prev };
+      delete newErrors[fieldName];
+      return newErrors;
+    });
+  };
+
   return {
     errors,
     validateField,
@@ -58,5 +73,7 @@ export function useFormValidation() {
     shouldShowError,
     getError,
     clearErrors,
+    setError,
+    clearFieldError,
   };
 }
