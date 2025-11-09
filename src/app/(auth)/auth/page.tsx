@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { gsap } from "gsap";
 import Image from "next/image";
 import { User, Lock, Eye, EyeOff, Mail, Phone, UserCircle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useAuthAnimations } from "@/hooks/useAuthAnimations";
 import { UserType } from "@/types";
 import { loginSchema, registerSchema } from "@/types/schemas";
 import { toast } from "sonner";
@@ -19,107 +19,19 @@ export default function AuthPage() {
   const loginFormRef = useRef<HTMLFormElement>(null);
   const registerFormRef = useRef<HTMLFormElement>(null);
 
-  const toggleMode = () => {
-    const isMobile = window.innerWidth < 768;
-
-    if (isMobile) {
-      if (isLogin) {
-        gsap.to(loginFormRef.current, {
-          opacity: 0,
-          scale: 0.95,
-          duration: 0.3,
-          onComplete: () => {
-            setIsLogin(false);
-            gsap.set(loginFormRef.current, { scale: 1 });
-          },
-        });
-      } else {
-        gsap.to(registerFormRef.current, {
-          opacity: 0,
-          scale: 0.95,
-          duration: 0.3,
-          onComplete: () => {
-            setIsLogin(true);
-            gsap.set(registerFormRef.current, { scale: 1 });
-          },
-        });
-      }
-    } else {
-      if (isLogin) {
-        const tl = gsap.timeline();
-        tl.to(loginFormRef.current, { 
-          opacity: 0, 
-          scale: 0.9,
-          y: -20,
-          duration: 0.4,
-          ease: "power2.in"
-        })
-        .to(logoRef.current, { 
-          opacity: 0, 
-          scale: 0.8,
-          rotateY: 90,
-          duration: 0.4,
-          ease: "power2.inOut"
-        }, "-=0.2")
-        .call(() => setIsLogin(false))
-        .set(loginFormRef.current, { scale: 1, y: 0 })
-        .to(logoRef.current, { 
-          opacity: 1, 
-          scale: 1,
-          rotateY: 0,
-          duration: 0.5,
-          ease: "power2.out"
-        })
-        .fromTo(registerFormRef.current, 
-          { opacity: 0, scale: 0.9, y: 20 }, 
-          { 
-            opacity: 1, 
-            scale: 1, 
-            y: 0,
-            duration: 0.4,
-            ease: "power2.out"
-          }, 
-          "-=0.3"
-        );
-      } else {
-        const tl = gsap.timeline();
-        tl.to(registerFormRef.current, { 
-          opacity: 0, 
-          scale: 0.9,
-          y: -20,
-          duration: 0.4,
-          ease: "power2.in"
-        })
-        .to(logoRef.current, { 
-          opacity: 0, 
-          scale: 0.8,
-          rotateY: -90,
-          duration: 0.4,
-          ease: "power2.inOut"
-        }, "-=0.2")
-        .call(() => setIsLogin(true))
-        .set(registerFormRef.current, { scale: 1, y: 0 })
-        .to(logoRef.current, { 
-          opacity: 1, 
-          scale: 1,
-          rotateY: 0,
-          duration: 0.5,
-          ease: "power2.out"
-        })
-        .fromTo(loginFormRef.current, 
-          { opacity: 0, scale: 0.9, y: 20 }, 
-          { 
-            opacity: 1, 
-            scale: 1, 
-            y: 0,
-            duration: 0.4,
-            ease: "power2.out"
-          }, 
-          "-=0.3"
-        );
-      }
-    }
+  const handleModeChange = () => {
+    setShowPassword(false);
+    setShowConfirmPassword(false);
   };
+
+  const { toggleMode } = useAuthAnimations({
+    logoRef,
+    loginFormRef,
+    registerFormRef,
+    isLogin,
+    setIsLogin,
+    onModeChange: handleModeChange,
+  });
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
