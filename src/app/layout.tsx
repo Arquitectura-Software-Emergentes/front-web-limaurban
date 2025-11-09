@@ -1,4 +1,5 @@
 import React from "react";
+import { Toaster } from "sonner";
 import "../styles/globals.css";
 
 export const metadata = {
@@ -11,6 +12,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="es">
       <body className="min-h-screen bg-[#1A1E29]">
         {children}
+        <Toaster position="top-right" richColors />
       </body>
     </html>
   );
