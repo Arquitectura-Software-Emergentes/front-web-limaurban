@@ -26,35 +26,97 @@ export default function AuthPage() {
       if (isLogin) {
         gsap.to(loginFormRef.current, {
           opacity: 0,
+          scale: 0.95,
           duration: 0.3,
-          onComplete: () => setIsLogin(false),
+          onComplete: () => {
+            setIsLogin(false);
+            gsap.set(loginFormRef.current, { scale: 1 });
+          },
         });
       } else {
         gsap.to(registerFormRef.current, {
           opacity: 0,
+          scale: 0.95,
           duration: 0.3,
-          onComplete: () => setIsLogin(true),
+          onComplete: () => {
+            setIsLogin(true);
+            gsap.set(registerFormRef.current, { scale: 1 });
+          },
         });
       }
     } else {
       if (isLogin) {
-        gsap.to(loginFormRef.current, { 
+        const tl = gsap.timeline();
+        tl.to(loginFormRef.current, { 
           opacity: 0, 
+          scale: 0.9,
+          y: -20,
           duration: 0.4,
-          onComplete: () => {
-            setIsLogin(false);
-            gsap.fromTo(registerFormRef.current, { opacity: 0 }, { opacity: 1, duration: 0.4 });
-          }
-        });
+          ease: "power2.in"
+        })
+        .to(logoRef.current, { 
+          opacity: 0, 
+          scale: 0.8,
+          rotateY: 90,
+          duration: 0.4,
+          ease: "power2.inOut"
+        }, "-=0.2")
+        .call(() => setIsLogin(false))
+        .set(loginFormRef.current, { scale: 1, y: 0 })
+        .to(logoRef.current, { 
+          opacity: 1, 
+          scale: 1,
+          rotateY: 0,
+          duration: 0.5,
+          ease: "power2.out"
+        })
+        .fromTo(registerFormRef.current, 
+          { opacity: 0, scale: 0.9, y: 20 }, 
+          { 
+            opacity: 1, 
+            scale: 1, 
+            y: 0,
+            duration: 0.4,
+            ease: "power2.out"
+          }, 
+          "-=0.3"
+        );
       } else {
-        gsap.to(registerFormRef.current, { 
+        const tl = gsap.timeline();
+        tl.to(registerFormRef.current, { 
           opacity: 0, 
+          scale: 0.9,
+          y: -20,
           duration: 0.4,
-          onComplete: () => {
-            setIsLogin(true);
-            gsap.fromTo(loginFormRef.current, { opacity: 0 }, { opacity: 1, duration: 0.4 });
-          }
-        });
+          ease: "power2.in"
+        })
+        .to(logoRef.current, { 
+          opacity: 0, 
+          scale: 0.8,
+          rotateY: -90,
+          duration: 0.4,
+          ease: "power2.inOut"
+        }, "-=0.2")
+        .call(() => setIsLogin(true))
+        .set(registerFormRef.current, { scale: 1, y: 0 })
+        .to(logoRef.current, { 
+          opacity: 1, 
+          scale: 1,
+          rotateY: 0,
+          duration: 0.5,
+          ease: "power2.out"
+        })
+        .fromTo(loginFormRef.current, 
+          { opacity: 0, scale: 0.9, y: 20 }, 
+          { 
+            opacity: 1, 
+            scale: 1, 
+            y: 0,
+            duration: 0.4,
+            ease: "power2.out"
+          }, 
+          "-=0.3"
+        );
       }
     }
   };
