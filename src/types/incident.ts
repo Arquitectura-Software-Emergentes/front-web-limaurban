@@ -12,7 +12,9 @@ export interface Comment {
   updated_at: string;
   users?: {
     id: string;
-    full_name: string;
+    full_name: string | null;
+    email: string;
+    user_type: 'CITIZEN' | 'MUNICIPALITY_STAFF';
   };
 }
 
@@ -38,6 +40,18 @@ export interface Incident {
   districts?: District;
   incident_categories?: IncidentCategory;
   comments?: Comment[];
+  reported_by_user?: {
+    id: string;
+    full_name: string | null;
+    email: string;
+    user_type: 'CITIZEN' | 'MUNICIPALITY_STAFF';
+  };
+  assigned_to_user?: {
+    id: string;
+    full_name: string | null;
+    email: string;
+    user_type: 'CITIZEN' | 'MUNICIPALITY_STAFF';
+  } | null;
 }
 
 export interface IncidentInsert {
