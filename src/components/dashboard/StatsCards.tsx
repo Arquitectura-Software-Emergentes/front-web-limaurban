@@ -8,8 +8,8 @@ export default function StatsCards() {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        {[1, 2, 3, 4].map((i) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+        {[1, 2, 3, 4, 5].map((i) => (
           <div
             key={i}
             className="p-4 rounded-[5px] border-2 border-[#345473] bg-[#1A1E29] flex flex-col items-center justify-center text-center animate-pulse"
@@ -24,6 +24,7 @@ export default function StatsCards() {
 
   const totalIncidents = incidents.length;
   const pendingIncidents = incidents.filter(inc => inc.status === 'pending').length;
+  const inReviewIncidents = incidents.filter(inc => inc.status === 'in_review').length;
   const inProgressIncidents = incidents.filter(inc => inc.status === 'in_progress').length;
   const resolvedIncidents = incidents.filter(inc => inc.status === 'resolved').length;
 
@@ -43,6 +44,13 @@ export default function StatsCards() {
       borderColor: 'border-[#D52D2D]'
     },
     { 
+      title: 'En Revisión', 
+      count: inReviewIncidents, 
+      bgColor: 'bg-[#1E3A5F]',
+      textColor: 'text-[#5B9BD5]',
+      borderColor: 'border-[#5B9BD5]'
+    },
+    { 
       title: 'En Proceso', 
       count: inProgressIncidents, 
       bgColor: 'bg-[#452F09]',
@@ -59,7 +67,7 @@ export default function StatsCards() {
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
       {stats.map((stat, index) => (
         <div
           key={index}

@@ -22,7 +22,7 @@ export function useCategories(): UseCategoriesReturn {
         const { data, error: queryError } = await supabase
           .from('incident_categories')
           .select('*')
-          .order('category_name');
+          .order('name');
 
         if (queryError) throw queryError;
 
