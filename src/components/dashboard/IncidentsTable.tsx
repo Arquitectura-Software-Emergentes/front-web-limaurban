@@ -106,48 +106,77 @@ export default function IncidentsTable() {
     <div className="w-full overflow-x-auto">
       <TableFilters onFilterChange={handleFilterChange} />
       <div className="border-2 border-[#345473] rounded-[7px] min-w-[800px]">
-        <table className="min-w-full">
-          <thead className="bg-transparent">
-            <tr className="border-b border-[#345473]">
-              <th className="px-6 py-3 text-left text-xs font-medium text-[#FFFFFF] uppercase tracking-wider">ID</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-[#FFFFFF] uppercase tracking-wider">Distrito</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-[#FFFFFF] uppercase tracking-wider">Tipo</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-[#FFFFFF] uppercase tracking-wider">Prioridad</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-[#FFFFFF] uppercase tracking-wider">Estado</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-[#FFFFFF] uppercase tracking-wider">Fecha</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-[#345473]">
-            {filteredIncidents.map((incident) => (
-              <tr 
-                key={incident.incident_id}
-                onClick={() => router.push(ROUTES.INCIDENTS.DETAIL(incident.incident_id))}
-                className="cursor-pointer hover:bg-[#1E2736] transition-colors"
+        {filteredIncidents.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 px-4">
+            <div className="text-center">
+              <svg
+                className="mx-auto h-12 w-12 text-[#345473] mb-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
               >
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-[#D9D9D9]">
-                  {`IN-${incident.incident_id.slice(0, 8)}`}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-[#D9D9D9]">
-                  {incident.districts?.district_name || incident.district_code}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-[#D9D9D9]">
-                  {incident.incident_categories?.name || 'N/A'}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-[#D9D9D9]">
-                  {translatePriority(incident.priority)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={getStatusColor(incident.status)}>
-                    {translateStatus(incident.status)}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-[#D9D9D9]">
-                  {formatDate(incident.created_at)}
-                </td>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              <h3 className="text-lg font-medium text-[#D9D9D9] mb-2">
+                No hay incidentes registrados
+              </h3>
+              <p className="text-sm text-[#8B8B8B]">
+                {filters.distrito || filters.estado || filters.prioridad || filters.fecha
+                  ? 'No se encontraron incidentes con los filtros aplicados.'
+                  : 'Aún no se han reportado incidentes en el sistema.'}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <table className="min-w-full">
+            <thead className="bg-transparent">
+              <tr className="border-b border-[#345473]">
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#FFFFFF] uppercase tracking-wider">ID</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#FFFFFF] uppercase tracking-wider">Distrito</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#FFFFFF] uppercase tracking-wider">Tipo</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#FFFFFF] uppercase tracking-wider">Prioridad</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#FFFFFF] uppercase tracking-wider">Estado</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#FFFFFF] uppercase tracking-wider">Fecha</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-[#345473]">
+              {filteredIncidents.map((incident) => (
+                <tr 
+                  key={incident.incident_id}
+                  onClick={() => router.push(ROUTES.INCIDENTS.DETAIL(incident.incident_id))}
+                  className="cursor-pointer hover:bg-[#1E2736] transition-colors"
+                >
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#D9D9D9]">
+                    {`IN-${incident.incident_id.slice(0, 8)}`}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#D9D9D9]">
+                    {incident.districts?.district_name || incident.district_code}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#D9D9D9]">
+                    {incident.incident_categories?.name || 'N/A'}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#D9D9D9]">
+                    {translatePriority(incident.priority)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={getStatusColor(incident.status)}>
+                      {translateStatus(incident.status)}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#D9D9D9]">
+                    {formatDate(incident.created_at)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );
