@@ -1,19 +1,58 @@
-import { updateSession } from "@/lib/supabase/middleware";
-import { type NextRequest } from "next/server";
+import { createServerClient } from "@supabase/ssr";
+import { NextResponse, type NextRequest } from "next/server";
 
-export async function middleware(request: NextRequest) {
-  return await updateSession(request);
+async function middlewareHandler(request: NextRequest) {
+  console.log("🚀 MIDDLEWARE EJECUTADO - Ruta:", request.nextUrl.pathname);
+
+  const response = NextResponse.next();
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll: () => request.cookies.getAll(),
+        setAll: (cookies) => {
+          cookies.forEach(({ name, value, options }) => {
+            response.cookies.set(name, value, options);
+          });
+        },
+      },
+    }
+  );
+
+  const { data } = await supabase.auth.getUser();
+  const user = data.user;
+
+  console.log("� MIDDLEWARE DEBUG:", {
+    path: request.nextUrl.pathname,
+    hasUser: !!user,
+    email: user?.email,
+  });
+
+  const url = request.nextUrl.clone();
+
+  if (!user && request.nextUrl.pathname.startsWith("/dashboard")) {
+    console.log("❌ No user, redirecting to /auth");
+    url.pathname = "/auth";
+    return NextResponse.redirect(url);
+  }
+
+  if (user && (request.nextUrl.pathname === "/" || request.nextUrl.pathname.startsWith("/auth"))) {
+    console.log("✅ User found, redirecting to /dashboard");
+    url.pathname = "/dashboard";
+    return NextResponse.redirect(url);
+  }
+
+  console.log("➡️ Access allowed");
+  return response;
 }
+
+export default middlewareHandler;
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - images - .svg, .png, .jpg, .jpeg, .gif, .webp
-     */
+    "/",
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

@@ -2,7 +2,6 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { UserType } from "@/types";
 
 interface LoginCredentials {
@@ -21,17 +20,20 @@ interface RegisterData {
 export async function login(credentials: LoginCredentials) {
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email: credentials.email,
     password: credentials.password,
   });
 
   if (error) {
+    console.error('❌ Login error:', error);
     return { success: false, error: error.message };
   }
 
+  console.log('✅ Login successful:', { userId: data.user?.id, hasSession: !!data.session });
+  
   revalidatePath("/", "layout");
-  redirect("/dashboard");
+  return { success: true };
 }
 
 export async function register(data: RegisterData) {
@@ -65,7 +67,12 @@ export async function register(data: RegisterData) {
 
 export async function logout() {
   const supabase = await createClient();
-  await supabase.auth.signOut();
+  const { error } = await supabase.auth.signOut();
+  
+  if (error) {
+    return { success: false, error: error.message };
+  }
+  
   revalidatePath("/", "layout");
-  redirect("/auth");
+  return { success: true };
 }

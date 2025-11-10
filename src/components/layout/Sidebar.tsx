@@ -4,16 +4,13 @@ import React from 'react';
 import { LayoutDashboard, Map, Building2, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { createClient } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function Sidebar() {
-  const router = useRouter();
+  const { logout, loading } = useAuth();
 
   const handleLogout = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push('/auth');
+    await logout();
   };
 
   return (
@@ -55,11 +52,12 @@ export default function Sidebar() {
       </div>
       <button
         onClick={handleLogout}
-        className="flex items-center justify-center space-x-2 px-6 py-2 text-white bg-[#0E3D41] hover:bg-opacity-90 rounded-[100px] transition-colors mx-auto shadow-[0_0_10px_#00FFCD]"
+        disabled={loading}
+        className="flex items-center justify-center space-x-2 px-6 py-2 text-white bg-[#0E3D41] hover:bg-opacity-90 rounded-[100px] transition-colors mx-auto shadow-[0_0_10px_#00FFCD] disabled:opacity-50"
       >
         <div className="flex items-center justify-center">
           <LogOut size={20} className="text-white" />
-          <span className="ml-2">Cerrar Sesión</span>
+          <span className="ml-2">{loading ? 'Cerrando...' : 'Cerrar Sesión'}</span>
         </div>
       </button>
     </div>

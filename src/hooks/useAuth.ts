@@ -35,6 +35,7 @@ export function useAuth() {
       }
 
       toast.success('Inicio de sesión exitoso');
+      window.location.href = '/dashboard';
       return { success: true };
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
@@ -79,8 +80,17 @@ export function useAuth() {
   const logout = async () => {
     setLoading(true);
     try {
-      await logoutAction();
+      const result = await logoutAction();
+      
+      if (!result.success) {
+        const errorMsg = result.error || 'Error al cerrar sesión';
+        setError(errorMsg);
+        toast.error(errorMsg);
+        return;
+      }
+      
       toast.success('Sesión cerrada correctamente');
+      window.location.href = '/auth';
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error al cerrar sesión';
       setError(errorMessage);
