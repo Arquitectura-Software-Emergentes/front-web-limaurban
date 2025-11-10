@@ -1,17 +1,32 @@
-import React from 'react';
-import Sidebar from '@/components/layout/Sidebar';
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import Sidebar from "@/components/layout/Sidebar";
+import SessionHandler from "@/components/auth/SessionHandler";
+import { LoadingProvider } from "@/contexts/LoadingContext";
+import NavigationLoader from "@/components/layout/NavigationLoader";
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/auth");
+  }
+
   return (
-    <div className="min-h-screen">
-      <Sidebar />
-      <main className="ml-64 p-8">
-        {children}
-      </main>
-    </div>
+    <LoadingProvider>
+      <div className="min-h-screen flex">
+        <SessionHandler />
+        <NavigationLoader />
+        <Sidebar />
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 w-full">{children}</main>
+      </div>
+    </LoadingProvider>
   );
 }

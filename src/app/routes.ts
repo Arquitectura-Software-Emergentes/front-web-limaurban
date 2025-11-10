@@ -1,11 +1,16 @@
 export const ROUTES = {
   HOME: '/',
-  LOGIN: '/login',
+  AUTH: '/auth',
+  LOGIN: '/auth',
+  REGISTER: '/auth',
+  SIGNUP_SUCCESS: '/auth/signup-success',
+  AUTH_ERROR: '/auth/error',
+  AUTH_CONFIRM: '/auth/confirm',
   DASHBOARD: '/dashboard',
-  INCIDENTES: {
+  INCIDENTS: {
     LIST: '/dashboard',
-    DETAIL: (id: string) => `/incidentes/${id}`,
+    DETAIL: (id: string) => `/incidents/${id}`,
   },
-  MUNICIPALIDAD: '/municipalidad',
-  MAPAS: '/mapas',
+  MUNICIPALITY: '/municipality',
+  MAPS: '/maps',
 } as const;

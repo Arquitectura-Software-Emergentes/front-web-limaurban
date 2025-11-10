@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Mail, Eye, EyeOff, Lock } from 'lucide-react';
 
-export default function MunicipalidadPage() {
+export default function MunicipalityPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
