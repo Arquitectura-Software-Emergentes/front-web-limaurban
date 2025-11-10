@@ -5,4 +5,8 @@ export * from './role-assignment';
 export * from './district';
 export * from './incident-category';
 export * from './incident';
+export * from './incident-history';
+export * from './geospatial';
+export * from './notification';
+export * from './yolo';
 export * from './schemas';

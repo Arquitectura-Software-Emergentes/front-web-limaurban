@@ -38,16 +38,14 @@ export function useIncidents(options: UseIncidentsOptions = {}): UseIncidentsRet
           *,
           districts (
             district_code,
-            district_name
+            district_name,
+            population
           ),
           incident_categories (
-            category_code,
-            category_name
-          ),
-          users!reported_by (
-            id,
-            full_name,
-            user_type
+            category_id,
+            code,
+            name,
+            icon_url
           )
         `, { count: 'exact' })
         .order('created_at', { ascending: false });
@@ -61,7 +59,7 @@ export function useIncidents(options: UseIncidentsOptions = {}): UseIncidentsRet
       }
 
       if (options.category) {
-        query = query.eq('category_code', options.category);
+        query = query.eq('category_id', options.category);
       }
 
       if (options.priority) {

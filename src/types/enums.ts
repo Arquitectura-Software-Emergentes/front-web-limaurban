@@ -8,6 +8,8 @@ export type AnalysisStatus = 'pending' | 'processing' | 'completed' | 'failed';
 
 export type AnalysisType = 'heatmap' | 'cluster' | 'hotspot';
 
+export type FileType = 'image' | 'video' | 'document';
+
 export type NotificationType = 
   | 'incident_status_change'
   | 'incident_assigned'

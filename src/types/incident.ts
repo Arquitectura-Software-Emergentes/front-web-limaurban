@@ -1,4 +1,20 @@
 import { IncidentStatus, IncidentPriority } from './enums';
+import { District } from './district';
+import { IncidentCategory } from './incident-category';
+
+export interface Comment {
+  comment_id: string;
+  incident_id: string;
+  author_id: string;
+  content: string;
+  is_internal: boolean;
+  created_at: string;
+  updated_at: string;
+  users?: {
+    id: string;
+    full_name: string;
+  };
+}
 
 export interface Incident {
   incident_id: string;
@@ -19,6 +35,9 @@ export interface Incident {
   resolved_at: string | null;
   created_at: string;
   updated_at: string;
+  districts?: District;
+  incident_categories?: IncidentCategory;
+  comments?: Comment[];
 }
 
 export interface IncidentInsert {

@@ -33,28 +33,27 @@ export function useIncident(incidentId: string | null): UseIncidentReturn {
           *,
           districts (
             district_code,
-            district_name
+            district_name,
+            population,
+            area_km2
           ),
           incident_categories (
-            category_code,
-            category_name
+            category_id,
+            code,
+            name,
+            description,
+            icon_url
           ),
-          users!reported_by (
-            id,
-            full_name,
-            user_type
-          ),
-          incident_comments (
-            id,
-            comment_text,
+          comments (
+            comment_id,
+            author_id,
+            content,
+            is_internal,
             created_at,
-            users (
-              id,
-              full_name
-            )
+            updated_at
           )
         `)
-        .eq('id', incidentId)
+        .eq('incident_id', incidentId)
         .single();
 
       if (queryError) throw queryError;

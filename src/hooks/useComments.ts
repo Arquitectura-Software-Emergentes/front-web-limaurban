@@ -2,31 +2,38 @@ import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { toast } from 'sonner';
 
-interface Comment {
+interface CommentInput {
   incident_id: string;
-  comment_text: string;
+  content: string;
 }
 
 interface UseCommentsReturn {
-  createComment: (data: Comment) => Promise<boolean>;
+  createComment: (data: CommentInput) => Promise<boolean>;
   loading: boolean;
 }
 
 export function useComments(): UseCommentsReturn {
   const [loading, setLoading] = useState(false);
 
-  const createComment = async (data: Comment): Promise<boolean> => {
+  const createComment = async (data: CommentInput): Promise<boolean> => {
     setLoading(true);
 
     try {
       const supabase = createClient();
 
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        throw new Error('Usuario no autenticado');
+      }
+
       const { error } = await supabase
-        .from('incident_comments')
+        .from('comments')
         .insert({
           incident_id: data.incident_id,
-          comment_text: data.comment_text,
-          // user_id se obtiene automáticamente del JWT vía RLS
+          author_id: user.id,
+          content: data.content,
+          is_internal: false,
         });
 
       if (error) throw error;

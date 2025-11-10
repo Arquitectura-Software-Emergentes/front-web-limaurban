@@ -1,13 +1,31 @@
 'use client';
 
 import React from 'react';
-import incidentsData from '@/data/incidents.json';
+import { useIncidents } from '@/hooks/useIncidents';
 
 export default function StatsCards() {
-  const totalIncidents = incidentsData.incidents.length;
-  const pendingIncidents = incidentsData.incidents.filter(inc => inc.estado === 'Pendiente').length;
-  const inProgressIncidents = incidentsData.incidents.filter(inc => inc.estado === 'En Proceso').length;
-  const resolvedIncidents = incidentsData.incidents.filter(inc => inc.estado === 'Resuelto').length;
+  const { incidents, loading } = useIncidents();
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        {[1, 2, 3, 4].map((i) => (
+          <div
+            key={i}
+            className="p-4 rounded-[5px] border-2 border-[#345473] bg-[#1A1E29] flex flex-col items-center justify-center text-center animate-pulse"
+          >
+            <div className="h-16 w-24 bg-[#345473] rounded mb-2"></div>
+            <div className="h-6 w-32 bg-[#345473] rounded"></div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  const totalIncidents = incidents.length;
+  const pendingIncidents = incidents.filter(inc => inc.status === 'pending').length;
+  const inProgressIncidents = incidents.filter(inc => inc.status === 'in_progress').length;
+  const resolvedIncidents = incidents.filter(inc => inc.status === 'resolved').length;
 
   const stats = [
     { 

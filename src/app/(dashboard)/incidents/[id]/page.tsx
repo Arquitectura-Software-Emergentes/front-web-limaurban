@@ -1,18 +1,32 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
-import IncidenteCard from '../../../../components/incidents/IncidenteCard';
-import ComentariosIncidente from '../../../../components/incidents/ComentariosIncidente';
-import incidentsData from '../../../../data/incidents.json';
+import { useParams } from 'next/navigation';
+import IncidentCard from '@/components/incidents/IncidentCard';
+import CommentsSection from '@/components/incidents/CommentsSection';
+import { useIncident } from '@/hooks/useIncident';
 
-interface PageProps {
-  params: { id: string };
-}
+export default function IncidentDetailPage() {
+  const params = useParams();
+  const incidentId = params.id as string;
+  
+  const { incident, loading, error } = useIncident(incidentId);
 
-export default async function IncidentDetailPage(props: PageProps) {
-  const params = await Promise.resolve(props.params);
-  const incidente = incidentsData.incidents.find(inc => inc.id === params.id);
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto p-8">
+        <div className="animate-pulse space-y-6">
+          <div className="h-10 w-32 bg-[#1E2736] rounded"></div>
+          <div className="h-8 w-64 bg-[#1E2736] rounded"></div>
+          <div className="h-64 bg-[#1E2736] rounded"></div>
+          <div className="h-48 bg-[#1E2736] rounded"></div>
+        </div>
+      </div>
+    );
+  }
 
-  if (!incidente || !incidente.comentarios) {
+  if (error || !incident) {
     return (
       <div className="flex flex-col items-center justify-center p-8">
         <p className="text-white mb-4">Incidente no encontrado</p>
@@ -34,8 +48,11 @@ export default async function IncidentDetailPage(props: PageProps) {
         </Link>
         <h1 className="text-2xl font-bold text-white">Detalle del Incidente</h1>
       </div>
-      <IncidenteCard incidente={incidente} />
-      <ComentariosIncidente comentarios={incidente.comentarios} />
+      <IncidentCard incident={incident} />
+      <CommentsSection 
+        incidentId={incidentId} 
+        comments={incident.comments || []} 
+      />
     </div>
   );
 }
