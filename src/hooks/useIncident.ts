@@ -27,6 +27,7 @@ export function useIncident(incidentId: string | null): UseIncidentReturn {
     try {
       const supabase = createClient();
 
+      // Fetch incident with basic relations
       const { data, error: queryError } = await supabase
         .from('incidents')
         .select(`
@@ -43,14 +44,6 @@ export function useIncident(incidentId: string | null): UseIncidentReturn {
             name,
             description,
             icon_url
-          ),
-          comments (
-            comment_id,
-            author_id,
-            content,
-            is_internal,
-            created_at,
-            updated_at
           )
         `)
         .eq('incident_id', incidentId)
@@ -58,7 +51,57 @@ export function useIncident(incidentId: string | null): UseIncidentReturn {
 
       if (queryError) throw queryError;
 
-      setIncident(data);
+      // Fetch reported_by user
+      let reportedByUser = null;
+      if (data.reported_by) {
+        const { data: userData } = await supabase
+          .from('users')
+          .select('id, full_name, email, user_type')
+          .eq('id', data.reported_by)
+          .single();
+        reportedByUser = userData;
+      }
+
+      // Fetch assigned_to user
+      let assignedToUser = null;
+      if (data.assigned_to) {
+        const { data: userData } = await supabase
+          .from('users')
+          .select('id, full_name, email, user_type')
+          .eq('id', data.assigned_to)
+          .single();
+        assignedToUser = userData;
+      }
+
+      // Fetch comments
+      const { data: commentsData, error: commentsError } = await supabase
+        .from('comments')
+        .select(`
+          comment_id,
+          incident_id,
+          author_id,
+          content,
+          is_internal,
+          created_at,
+          updated_at,
+          users (
+            id,
+            full_name,
+            email,
+            user_type
+          )
+        `)
+        .eq('incident_id', incidentId)
+        .order('created_at', { ascending: true });
+
+      if (commentsError) throw commentsError;
+
+      setIncident({
+        ...data,
+        reported_by_user: reportedByUser,
+        assigned_to_user: assignedToUser,
+        comments: commentsData || []
+      });
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error al cargar incidente';
       setError(errorMessage);
