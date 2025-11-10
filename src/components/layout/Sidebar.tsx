@@ -6,10 +6,12 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '@/hooks/useAuth';
 import { usePathname } from 'next/navigation';
+import { useLoading } from '@/contexts/LoadingContext';
 
 export default function Sidebar() {
   const { logout, loading } = useAuth();
   const pathname = usePathname();
+  const { showLoader } = useLoading();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isDesktopCollapsed, setIsDesktopCollapsed] = useState(false);
 
@@ -29,7 +31,17 @@ export default function Sidebar() {
   }, [isMobileOpen]);
 
   const handleLogout = async () => {
+    showLoader('Cerrando sesión...');
     await logout();
+  };
+
+  const handleNavClick = (label: string) => {
+    const messages: Record<string, string> = {
+      'Dashboard': 'Cargando dashboard...',
+      'Mapas': 'Cargando mapas...',
+      'Municipalidad': 'Cargando municipalidad...',
+    };
+    showLoader(messages[label] || 'Cargando...');
   };
 
   const navItems = [
@@ -130,6 +142,7 @@ export default function Sidebar() {
                 <Link
                   key={item.href}
                   href={item.href}
+                  onClick={() => handleNavClick(item.label)}
                   className={`
                     flex items-center px-4 py-2 rounded-[7px] transition-colors
                     ${isActive ? 'bg-[#034A36] text-white' : 'text-[#D9D9D9] hover:bg-[#034A36]'}

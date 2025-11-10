@@ -6,6 +6,7 @@ import type { LayerProps } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import incidentsData from '@/data/incidents.json';
 import { getDistrictCoordinates } from '@/data/districtCoordinates';
+import { useLoading } from '@/contexts/LoadingContext';
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 const USE_BACKEND_API = process.env.NEXT_PUBLIC_USE_BACKEND_API === 'true';
@@ -68,6 +69,8 @@ function generateDummyHeatmapFromIncidents(): GeoJSONData {
 export default function HeatmapView() {
   const [geoJsonData, setGeoJsonData] = useState<GeoJSONData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const { hideLoader } = useLoading();
 
   useEffect(() => {
     async function loadHeatmapData() {
@@ -80,6 +83,8 @@ export default function HeatmapView() {
             features: [],
           });
         } else {
+          // Simular un pequeño delay para que se vea la carga de datos
+          await new Promise(resolve => setTimeout(resolve, 300));
           const dummyData = generateDummyHeatmapFromIncidents();
           setGeoJsonData(dummyData);
         }
@@ -93,31 +98,42 @@ export default function HeatmapView() {
     loadHeatmapData();
   }, []);
 
+  // Ocultar el loader solo cuando el mapa Y los datos estén listos
+  useEffect(() => {
+    if (!loading && mapLoaded) {
+      // Pequeño delay para asegurar que todo esté renderizado
+      const timer = setTimeout(() => {
+        hideLoader();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, mapLoaded, hideLoader]);
+
   const heatmapLayer: LayerProps = {
     id: 'heatmap-layer',
     type: 'heatmap',
     paint: {
       'heatmap-weight': ['interpolate', ['linear'], ['get', 'incident_count'], 0, 0, 50, 1],
-      'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 0, 1, 15, 3],
+      'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 0, 2, 15, 5],
       'heatmap-color': [
         'interpolate',
         ['linear'],
         ['heatmap-density'],
         0,
-        'rgba(0, 0, 255, 0)',
+        'rgba(0, 196, 142, 0)', // Transparente con verde de la app
         0.2,
-        '#00FF00',
+        '#00C48E', // Verde turquesa (color principal de la app) - Baja densidad
         0.4,
-        '#FFFF00',
+        '#FFD700', // Amarillo dorado - Media
         0.6,
-        '#FFA500',
+        '#FF8C00', // Naranja intenso - Alta
         0.8,
-        '#FF4500',
+        '#FF4500', // Rojo anaranjado - Muy alta
         1,
-        '#FF0000',
+        '#DC143C', // Rojo carmesí - Crítica
       ],
-      'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 0, 2, 15, 30],
-      'heatmap-opacity': 0.8,
+      'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 0, 15, 11, 40, 15, 60],
+      'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 0, 0.9, 15, 0.7],
     },
   };
 
@@ -140,6 +156,7 @@ export default function HeatmapView() {
         }}
         style={{ width: '100%', height: '100%' }}
         mapStyle="mapbox://styles/mapbox/dark-v11"
+        onLoad={() => setMapLoaded(true)}
       >
         <Source id="incidents" type="geojson" data={geoJsonData}>
           <Layer {...heatmapLayer} />
@@ -150,19 +167,19 @@ export default function HeatmapView() {
         <h3 className="text-white font-semibold mb-3">Leyenda</h3>
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded" style={{ backgroundColor: '#00FF00' }}></div>
+            <div className="w-6 h-6 rounded shadow-lg" style={{ backgroundColor: '#00C48E' }}></div>
             <span className="text-gray-300 text-sm">Baja densidad</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded" style={{ backgroundColor: '#FFFF00' }}></div>
+            <div className="w-6 h-6 rounded shadow-lg" style={{ backgroundColor: '#FFD700' }}></div>
             <span className="text-gray-300 text-sm">Media</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded" style={{ backgroundColor: '#FFA500' }}></div>
+            <div className="w-6 h-6 rounded shadow-lg" style={{ backgroundColor: '#FF8C00' }}></div>
             <span className="text-gray-300 text-sm">Alta</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded" style={{ backgroundColor: '#FF0000' }}></div>
+            <div className="w-6 h-6 rounded shadow-lg" style={{ backgroundColor: '#DC143C' }}></div>
             <span className="text-gray-300 text-sm">Crítica</span>
           </div>
         </div>

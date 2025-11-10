@@ -1,5 +1,5 @@
-import AuthLoading from "@/components/layout/AuthLoading";
+import PageLoader from "@/components/layout/PageLoader";
 
 export default function DashboardLoading() {
-  return <AuthLoading />;
+  return <PageLoader message="Cargando contenido..." />;
 }

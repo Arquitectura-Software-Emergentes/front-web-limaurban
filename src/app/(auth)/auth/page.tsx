@@ -361,13 +361,13 @@ export default function AuthPage() {
 
               <div className="text-center text-sm text-slate-600">
                 ¿No tienes cuenta?{" "}
-                <button
+                {/* <button
                   type="button"
                   onClick={toggleMode}
                   className="text-[#00C48E] hover:text-[#078F75] font-medium transition-colors"
                 >
                   Regístrate
-                </button>
+                </button> */}
               </div>
             </div>
           </form>
