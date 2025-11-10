@@ -1,9 +1,7 @@
+import { type NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
 
-async function middlewareHandler(request: NextRequest) {
-  console.log("🚀 MIDDLEWARE EJECUTADO - Ruta:", request.nextUrl.pathname);
-
+export async function middleware(request: NextRequest) {
   const response = NextResponse.next();
 
   const supabase = createServerClient(
@@ -24,31 +22,25 @@ async function middlewareHandler(request: NextRequest) {
   const { data } = await supabase.auth.getUser();
   const user = data.user;
 
-  console.log("� MIDDLEWARE DEBUG:", {
-    path: request.nextUrl.pathname,
-    hasUser: !!user,
-    email: user?.email,
-  });
+  const isAuthRoute = request.nextUrl.pathname === "/" || request.nextUrl.pathname.startsWith("/auth");
+  const isDashboardRoute = request.nextUrl.pathname.startsWith("/dashboard");
 
-  const url = request.nextUrl.clone();
-
-  if (!user && request.nextUrl.pathname.startsWith("/dashboard")) {
-    console.log("❌ No user, redirecting to /auth");
-    url.pathname = "/auth";
-    return NextResponse.redirect(url);
+  if (!user && isDashboardRoute) {
+    const redirectUrl = new URL("/auth", request.url);
+    redirectUrl.searchParams.set("redirectTo", request.nextUrl.pathname);
+    return NextResponse.redirect(redirectUrl);
   }
 
-  if (user && (request.nextUrl.pathname === "/" || request.nextUrl.pathname.startsWith("/auth"))) {
-    console.log("✅ User found, redirecting to /dashboard");
-    url.pathname = "/dashboard";
-    return NextResponse.redirect(url);
+  if (user && isAuthRoute) {
+    const redirectTo = request.nextUrl.searchParams.get("redirectTo");
+    const targetUrl = redirectTo && redirectTo.startsWith("/") 
+      ? new URL(redirectTo, request.url) 
+      : new URL("/dashboard", request.url);
+    return NextResponse.redirect(targetUrl);
   }
 
-  console.log("➡️ Access allowed");
   return response;
 }
-
-export default middlewareHandler;
 
 export const config = {
   matcher: [

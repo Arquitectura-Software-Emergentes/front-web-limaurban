@@ -35,7 +35,11 @@ export function useAuth() {
       }
 
       toast.success('Inicio de sesión exitoso');
-      window.location.href = '/dashboard';
+      
+      const params = new URLSearchParams(window.location.search);
+      const redirectTo = params.get('redirectTo') || '/dashboard';
+      window.location.href = redirectTo;
+      
       return { success: true };
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
