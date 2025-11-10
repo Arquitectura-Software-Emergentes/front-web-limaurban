@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { ChevronDown, MapPin, Wrench, AlertTriangle, Activity, Calendar, X } from 'lucide-react';
 import incidentsData from '@/data/incidents.json';

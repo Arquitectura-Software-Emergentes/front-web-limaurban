@@ -1,8 +1,18 @@
+'use client';
+
 import React, { useState, useMemo } from 'react';
 import incidentsData from '@/data/incidents.json';
 import TableFilters from './TableFilters';
 import { useRouter } from 'next/navigation';
 import { ROUTES } from '../../app/routes';
+
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -90,7 +100,7 @@ export default function IncidentsTable() {
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-[#D9D9D9]">
-                  {new Date(incident.fecha).toLocaleDateString('es-ES')}
+                  {formatDate(incident.fecha)}
                 </td>
               </tr>
             ))}

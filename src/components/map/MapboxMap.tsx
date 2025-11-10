@@ -72,12 +72,13 @@ export default function MapboxMap() {
   return (
     <div className="w-full h-[calc(100vh-200px)] rounded-lg overflow-hidden border border-[#345473]">
       <Map
-        mapboxApiAccessToken={MAPBOX_TOKEN}
-        longitude={-77.0428}
-        latitude={-12.0464}
-        zoom={11}
-        width="100%"
-        height="100%"
+        mapboxAccessToken={MAPBOX_TOKEN}
+        initialViewState={{
+          longitude: -77.0428,
+          latitude: -12.0464,
+          zoom: 11
+        }}
+        style={{ width: "100%", height: "100%" }}
         mapStyle="mapbox://styles/mapbox/dark-v11"
       >
         {incidentsWithCoords.map((incident) => (
