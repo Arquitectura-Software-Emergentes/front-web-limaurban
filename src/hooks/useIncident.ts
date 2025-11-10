@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Incident } from '@/types';
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 interface UseIncidentReturn {
   incident: Incident | null;
@@ -14,6 +15,7 @@ export function useIncident(incidentId: string | null): UseIncidentReturn {
   const [incident, setIncident] = useState<Incident | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const fetchIncident = async () => {
     if (!incidentId) {
@@ -51,29 +53,35 @@ export function useIncident(incidentId: string | null): UseIncidentReturn {
 
       if (queryError) throw queryError;
 
-      // Fetch reported_by user
+      // Fetch reported_by user separately
       let reportedByUser = null;
-      if (data.reported_by) {
-        const { data: userData } = await supabase
+      if (data?.reported_by) {
+        const { data: userData, error: userError } = await supabase
           .from('users')
-          .select('id, full_name, email, user_type')
+          .select('id, full_name, phone, user_type')
           .eq('id', data.reported_by)
           .single();
-        reportedByUser = userData;
+        
+        if (!userError && userData) {
+          reportedByUser = userData;
+        }
       }
 
-      // Fetch assigned_to user
+      // Fetch assigned_to user separately
       let assignedToUser = null;
-      if (data.assigned_to) {
-        const { data: userData } = await supabase
+      if (data?.assigned_to) {
+        const { data: userData, error: userError } = await supabase
           .from('users')
-          .select('id, full_name, email, user_type')
+          .select('id, full_name, phone, user_type')
           .eq('id', data.assigned_to)
           .single();
-        assignedToUser = userData;
+        
+        if (!userError && userData) {
+          assignedToUser = userData;
+        }
       }
 
-      // Fetch comments
+      // Fetch comments with author info
       const { data: commentsData, error: commentsError } = await supabase
         .from('comments')
         .select(`
@@ -87,14 +95,16 @@ export function useIncident(incidentId: string | null): UseIncidentReturn {
           users (
             id,
             full_name,
-            email,
+            phone,
             user_type
           )
         `)
         .eq('incident_id', incidentId)
         .order('created_at', { ascending: true });
 
-      if (commentsError) throw commentsError;
+      if (commentsError) {
+        console.error('Error fetching comments:', commentsError);
+      }
 
       setIncident({
         ...data,
@@ -105,7 +115,14 @@ export function useIncident(incidentId: string | null): UseIncidentReturn {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error al cargar incidente';
       setError(errorMessage);
-      toast.error(errorMessage);
+      
+      // Check if it's an auth error
+      if (errorMessage.includes('JWT') || errorMessage.includes('session') || errorMessage.includes('401')) {
+        toast.error('Tu sesión ha expirado. Redirigiendo...');
+        setTimeout(() => router.push('/auth'), 2000);
+      } else {
+        toast.error(errorMessage);
+      }
     } finally {
       setLoading(false);
     }

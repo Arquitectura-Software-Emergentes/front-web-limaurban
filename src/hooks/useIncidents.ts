@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Incident } from '@/types';
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 interface UseIncidentsOptions {
   districtCode?: string;
@@ -24,6 +25,7 @@ export function useIncidents(options: UseIncidentsOptions = {}): UseIncidentsRet
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [total, setTotal] = useState(0);
+  const router = useRouter();
 
   const fetchIncidents = async () => {
     setLoading(true);
@@ -79,7 +81,14 @@ export function useIncidents(options: UseIncidentsOptions = {}): UseIncidentsRet
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error al cargar incidentes';
       setError(errorMessage);
-      toast.error(errorMessage);
+      
+      // Check if it's an auth error
+      if (errorMessage.includes('JWT') || errorMessage.includes('session') || errorMessage.includes('401')) {
+        toast.error('Tu sesión ha expirado. Redirigiendo...');
+        setTimeout(() => router.push('/auth'), 2000);
+      } else {
+        toast.error(errorMessage);
+      }
     } finally {
       setLoading(false);
     }

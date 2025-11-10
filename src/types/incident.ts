@@ -12,8 +12,8 @@ export interface Comment {
   updated_at: string;
   users?: {
     id: string;
-    full_name: string | null;
-    email: string;
+    full_name: string;
+    phone: string | null;
     user_type: 'CITIZEN' | 'MUNICIPALITY_STAFF';
   };
 }
@@ -42,14 +42,14 @@ export interface Incident {
   comments?: Comment[];
   reported_by_user?: {
     id: string;
-    full_name: string | null;
-    email: string;
+    full_name: string;
+    phone: string | null;
     user_type: 'CITIZEN' | 'MUNICIPALITY_STAFF';
-  };
+  } | null;
   assigned_to_user?: {
     id: string;
-    full_name: string | null;
-    email: string;
+    full_name: string;
+    phone: string | null;
     user_type: 'CITIZEN' | 'MUNICIPALITY_STAFF';
   } | null;
 }

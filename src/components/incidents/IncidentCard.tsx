@@ -58,8 +58,8 @@ interface IncidentCardProps {
 export default function IncidentCard({ incident }: IncidentCardProps) {
   const districtName = incident.districts?.district_name || incident.district_code;
   const categoryName = incident.incident_categories?.name || 'N/A';
-  const reportedBy = incident.reported_by_user?.full_name || incident.reported_by_user?.email || 'Usuario desconocido';
-  const assignedTo = incident.assigned_to_user?.full_name || incident.assigned_to_user?.email || 'Sin asignar';
+  const reportedBy = incident.reported_by_user?.full_name || incident.reported_by_user?.phone || 'Usuario desconocido';
+  const assignedTo = incident.assigned_to_user?.full_name || incident.assigned_to_user?.phone || 'Sin asignar';
 
   return (
     <div className="bg-[#0B0F19] border border-[#345473] rounded-lg p-4 sm:p-6 mb-6">
