@@ -18,13 +18,20 @@ export function useIncidentActions(): UseIncidentActionsReturn {
     try {
       const supabase = createClient();
 
+      // Get current user for audit trail
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('No authenticated user');
+      }
+
       const { error } = await supabase
         .from('incidents')
         .update({
           status,
           updated_at: new Date().toISOString(),
+          updated_by: user.id,
         })
-        .eq('id', incidentId);
+        .eq('incident_id', incidentId);
 
       if (error) throw error;
 

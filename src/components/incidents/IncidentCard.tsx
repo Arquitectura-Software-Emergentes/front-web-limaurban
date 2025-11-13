@@ -1,6 +1,8 @@
 import React from 'react';
 import Image from 'next/image';
-import { Incident } from '@/types';
+import { Incident, IncidentFull } from '@/types';
+
+type IncidentCardIncident = Incident | IncidentFull;
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -52,14 +54,25 @@ const translatePriority = (priority: string) => {
 };
 
 interface IncidentCardProps {
-  incident: Incident;
+  incident: IncidentCardIncident;
 }
 
 export default function IncidentCard({ incident }: IncidentCardProps) {
-  const districtName = incident.districts?.district_name || incident.district_code;
-  const categoryName = incident.incident_categories?.name || 'N/A';
-  const reportedBy = incident.reported_by_user?.full_name || incident.reported_by_user?.phone || 'Usuario desconocido';
-  const assignedTo = incident.assigned_to_user?.full_name || incident.assigned_to_user?.phone || 'Sin asignar';
+  const districtName = ('district_name' in incident 
+    ? (incident.district_name ?? incident.district_code) 
+    : (incident.districts?.district_name ?? incident.district_code)) as string;
+  
+  const categoryName = ('category_name' in incident 
+    ? (incident.category_name ?? 'N/A') 
+    : (incident.incident_categories?.name ?? 'N/A')) as string;
+  
+  const reportedBy = ('reporter_name' in incident 
+    ? (incident.reporter_name ?? 'Usuario desconocido') 
+    : (incident.reported_by_user?.full_name ?? incident.reported_by_user?.phone ?? 'Usuario desconocido')) as string;
+  
+  const assignedTo = ('assignee_name' in incident 
+    ? (incident.assignee_name ?? 'Sin asignar') 
+    : (incident.assigned_to_user?.full_name ?? incident.assigned_to_user?.phone ?? 'Sin asignar')) as string;
 
   return (
     <div className="bg-[#0B0F19] border border-[#345473] rounded-lg p-4 sm:p-6 mb-6">

@@ -78,7 +78,7 @@ export default function MapboxMap() {
           latitude: -12.0464,
           zoom: 11
         }}
-        style={{ width: "100%", height: "100%" }}
+        style={{ width: '100%', height: '100%' }}
         mapStyle="mapbox://styles/mapbox/dark-v11"
       >
         {incidentsWithCoords.map((incident) => (

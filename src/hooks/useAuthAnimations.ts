@@ -23,7 +23,7 @@ export function useAuthAnimations({
 
     if (isMobile) {
       gsap.to(loginFormRef.current, {
-        opacity: 0,
+        autoAlpha: 0,
         scale: 0.95,
         duration: 0.3,
         onComplete: () => {
@@ -36,7 +36,7 @@ export function useAuthAnimations({
     } else {
       const tl = gsap.timeline();
       tl.to(loginFormRef.current, {
-        opacity: 0,
+        autoAlpha: 0,
         scale: 0.9,
         y: -20,
         duration: 0.4,
@@ -68,9 +68,9 @@ export function useAuthAnimations({
         })
         .fromTo(
           registerFormRef.current,
-          { opacity: 0, scale: 0.9, y: 20 },
+          { autoAlpha: 0, scale: 0.9, y: 20 },
           {
-            opacity: 1,
+            autoAlpha: 1,
             scale: 1,
             y: 0,
             duration: 0.4,
@@ -86,7 +86,7 @@ export function useAuthAnimations({
 
     if (isMobile) {
       gsap.to(registerFormRef.current, {
-        opacity: 0,
+        autoAlpha: 0,
         scale: 0.95,
         duration: 0.3,
         onComplete: () => {
@@ -99,7 +99,7 @@ export function useAuthAnimations({
     } else {
       const tl = gsap.timeline();
       tl.to(registerFormRef.current, {
-        opacity: 0,
+        autoAlpha: 0,
         scale: 0.9,
         y: -20,
         duration: 0.4,
@@ -131,9 +131,9 @@ export function useAuthAnimations({
         })
         .fromTo(
           loginFormRef.current,
-          { opacity: 0, scale: 0.9, y: 20 },
+          { autoAlpha: 0, scale: 0.9, y: 20 },
           {
-            opacity: 1,
+            autoAlpha: 1,
             scale: 1,
             y: 0,
             duration: 0.4,

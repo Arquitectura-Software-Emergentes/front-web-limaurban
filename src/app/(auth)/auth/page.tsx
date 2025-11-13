@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { User, Lock, Eye, EyeOff, Mail, Phone, UserCircle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
@@ -13,6 +13,210 @@ import { UserType } from "@/types";
 import { loginSchema, registerSchema, passwordSchema } from "@/types/schemas";
 import { toast } from "sonner";
 import { z } from "zod";
+import { gsap } from "gsap";
+
+// Componentes de campos fuera del componente principal para evitar re-renders
+interface LoginFormFieldsProps {
+  isMobile: boolean;
+  showPassword: boolean;
+  setShowPassword: (value: boolean) => void;
+  loginValidation: ReturnType<typeof useFormValidation>;
+}
+
+const LoginFormFields = ({ 
+  isMobile, 
+  showPassword, 
+  setShowPassword, 
+  loginValidation 
+}: LoginFormFieldsProps) => (
+  <>
+    <Input
+      id={isMobile ? "login-email-mobile" : "login-email-desktop"}
+      name="email"
+      type="email"
+      label="Correo electrónico"
+      placeholder="tu@email.com"
+      required
+      icon={<User size={18} color="#00C48E" />}
+      error={loginValidation.getError("email")}
+      showError={!!loginValidation.shouldShowError("email")}
+      onChange={(e) =>
+        loginValidation.validateField(
+          "email",
+          e.target.value,
+          z.string().email("Ingresa un correo electrónico válido")
+        )
+      }
+      onBlur={() => loginValidation.handleBlur("email")}
+    />
+
+    <Input
+      id={isMobile ? "login-password-mobile" : "login-password-desktop"}
+      name="password"
+      type={showPassword ? "text" : "password"}
+      label="Contraseña"
+      placeholder="••••••••"
+      required
+      icon={<Lock size={18} color="#00C48E" />}
+      rightIcon={
+        <button
+          type="button"
+          onClick={() => setShowPassword(!showPassword)}
+          className="text-slate-400 hover:text-[#00C48E] transition-colors"
+        >
+          {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+        </button>
+      }
+    />
+  </>
+);
+
+interface RegisterFormFieldsProps {
+  isMobile: boolean;
+  showPassword: boolean;
+  setShowPassword: (value: boolean) => void;
+  showConfirmPassword: boolean;
+  setShowConfirmPassword: (value: boolean) => void;
+  registerPasswordValue: string;
+  setRegisterPasswordValue: (value: string) => void;
+  showPasswordRequirements: boolean;
+  setShowPasswordRequirements: (value: boolean) => void;
+  registerValidation: ReturnType<typeof useFormValidation>;
+}
+
+const RegisterFormFields = ({
+  isMobile,
+  showPassword,
+  setShowPassword,
+  showConfirmPassword,
+  setShowConfirmPassword,
+  registerPasswordValue,
+  setRegisterPasswordValue,
+  showPasswordRequirements,
+  setShowPasswordRequirements,
+  registerValidation
+}: RegisterFormFieldsProps) => (
+  <>
+    <Input
+      id={isMobile ? "fullName-mobile" : "fullName-desktop"}
+      name="fullName"
+      type="text"
+      label="Nombre completo"
+      placeholder="Juan Pérez"
+      required
+      icon={<UserCircle size={18} color="#00C48E" />}
+    />
+
+    <Input
+      id={isMobile ? "register-email-mobile" : "register-email-desktop"}
+      name="email"
+      type="email"
+      label="Correo electrónico"
+      placeholder="tu@email.com"
+      required
+      icon={<Mail size={18} color="#00C48E" />}
+      error={registerValidation.getError("email")}
+      showError={!!registerValidation.shouldShowError("email")}
+      onChange={(e) =>
+        registerValidation.validateField(
+          "email",
+          e.target.value,
+          z.string().email("Ingresa un correo electrónico válido")
+        )
+      }
+      onBlur={() => registerValidation.handleBlur("email")}
+    />
+
+    <Input
+      id={isMobile ? "phone-mobile" : "phone-desktop"}
+      name="phone"
+      type="tel"
+      label="Teléfono (opcional)"
+      placeholder="987654321"
+      icon={<Phone size={18} color="#00C48E" />}
+    />
+
+    <Select
+      id={isMobile ? "userType-mobile" : "userType-desktop"}
+      name="userType"
+      label="Tipo de usuario"
+      required
+      defaultValue="CITIZEN"
+      icon={<User size={18} color="#00C48E" />}
+      options={[
+        { value: "CITIZEN", label: "Ciudadano" },
+        { value: "MUNICIPALITY_STAFF", label: "Personal Municipal" }
+      ]}
+    />
+
+    <div className="relative">
+      <Input
+        id={isMobile ? "register-password-mobile" : "register-password-desktop"}
+        name="password"
+        type={showPassword ? "text" : "password"}
+        label="Contraseña"
+        placeholder="••••••••"
+        required
+        icon={<Lock size={18} color="#00C48E" />}
+        rightIcon={
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="text-slate-400 hover:text-[#00C48E] transition-colors"
+          >
+            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+        }
+        error={registerValidation.getError("password")}
+        showError={!!registerValidation.shouldShowError("password") && !showPasswordRequirements}
+        onChange={(e) => {
+          setRegisterPasswordValue(e.target.value);
+          registerValidation.validateField("password", e.target.value, passwordSchema);
+        }}
+        onFocus={() => setShowPasswordRequirements(true)}
+        onBlur={() => {
+          registerValidation.handleBlur("password");
+          setShowPasswordRequirements(false);
+        }}
+      />
+      <PasswordRequirements 
+        password={registerPasswordValue} 
+        show={showPasswordRequirements} 
+      />
+    </div>
+
+    <Input
+      id={isMobile ? "confirmPassword-mobile" : "confirmPassword-desktop"}
+      name="confirmPassword"
+      type={showConfirmPassword ? "text" : "password"}
+      label="Confirmar contraseña"
+      placeholder="••••••••"
+      required
+      icon={<Lock size={18} color="#00C48E" />}
+      rightIcon={
+        <button
+          type="button"
+          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+          className="text-slate-400 hover:text-[#00C48E] transition-colors"
+        >
+          {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+        </button>
+      }
+      error={registerValidation.getError("confirmPassword")}
+      showError={!!registerValidation.shouldShowError("confirmPassword")}
+      onChange={(e) => {
+        if (e.target.value && registerPasswordValue) {
+          if (e.target.value !== registerPasswordValue) {
+            registerValidation.setError("confirmPassword", "Las contraseñas no coinciden");
+          } else {
+            registerValidation.clearFieldError("confirmPassword");
+          }
+        }
+      }}
+      onBlur={() => registerValidation.handleBlur("confirmPassword")}
+    />
+  </>
+);
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -28,6 +232,36 @@ export default function AuthPage() {
   const logoRef = useRef<HTMLDivElement>(null);
   const loginFormRef = useRef<HTMLFormElement>(null);
   const registerFormRef = useRef<HTMLFormElement>(null);
+
+  // Limpiar estilos inline de GSAP al montar
+  useEffect(() => {
+    if (loginFormRef.current) {
+      gsap.set(loginFormRef.current, { clearProps: "all" });
+    }
+    if (registerFormRef.current) {
+      gsap.set(registerFormRef.current, { clearProps: "all" });
+    }
+  }, []);
+
+  // Asegurar que el formulario visible sea completamente interactivo
+  useEffect(() => {
+    if (isLogin && loginFormRef.current) {
+      gsap.set(loginFormRef.current, { 
+        autoAlpha: 1, 
+        visibility: "visible",
+        pointerEvents: "auto",
+        opacity: 1
+      });
+    }
+    if (!isLogin && registerFormRef.current) {
+      gsap.set(registerFormRef.current, { 
+        autoAlpha: 1,
+        visibility: "visible", 
+        pointerEvents: "auto",
+        opacity: 1
+      });
+    }
+  }, [isLogin]);
 
   const handleModeChange = () => {
     setShowPassword(false);
@@ -91,171 +325,7 @@ export default function AuthPage() {
     });
   };
 
-  const RegisterFormFields = () => (
-    <>
-      <Input
-        id="fullName"
-        name="fullName"
-        type="text"
-        label="Nombre completo"
-        placeholder="Juan Pérez"
-        required
-        icon={<UserCircle size={18} color="#00C48E" />}
-      />
 
-      <Input
-        id="register-email"
-        name="email"
-        type="email"
-        label="Correo electrónico"
-        placeholder="tu@email.com"
-        required
-        icon={<Mail size={18} color="#00C48E" />}
-        error={registerValidation.getError("email")}
-        showError={!!registerValidation.shouldShowError("email")}
-        onChange={(e) =>
-          registerValidation.validateField(
-            "email",
-            e.target.value,
-            z.string().email("Ingresa un correo electrónico válido")
-          )
-        }
-        onBlur={() => registerValidation.handleBlur("email")}
-      />
-
-      <Input
-        id="phone"
-        name="phone"
-        type="tel"
-        label="Teléfono (opcional)"
-        placeholder="987654321"
-        icon={<Phone size={18} color="#00C48E" />}
-      />
-
-      <Select
-        id="userType"
-        name="userType"
-        label="Tipo de usuario"
-        required
-        defaultValue="CITIZEN"
-        icon={<User size={18} color="#00C48E" />}
-        options={[
-          { value: "CITIZEN", label: "Ciudadano" },
-          { value: "MUNICIPALITY_STAFF", label: "Personal Municipal" }
-        ]}
-      />
-
-      <div className="relative">
-        <Input
-          id="register-password"
-          name="password"
-          type={showPassword ? "text" : "password"}
-          label="Contraseña"
-          placeholder="••••••••"
-          required
-          icon={<Lock size={18} color="#00C48E" />}
-          rightIcon={
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="text-slate-400 hover:text-[#00C48E] transition-colors"
-            >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
-          }
-          error={registerValidation.getError("password")}
-          showError={!!registerValidation.shouldShowError("password") && !showPasswordRequirements}
-          onChange={(e) => {
-            setRegisterPasswordValue(e.target.value);
-            registerValidation.validateField("password", e.target.value, passwordSchema);
-          }}
-          onFocus={() => setShowPasswordRequirements(true)}
-          onBlur={() => {
-            registerValidation.handleBlur("password");
-            setShowPasswordRequirements(false);
-          }}
-        />
-        <PasswordRequirements 
-          password={registerPasswordValue} 
-          show={showPasswordRequirements} 
-        />
-      </div>
-
-      <Input
-        id="confirmPassword"
-        name="confirmPassword"
-        type={showConfirmPassword ? "text" : "password"}
-        label="Confirmar contraseña"
-        placeholder="••••••••"
-        required
-        icon={<Lock size={18} color="#00C48E" />}
-        rightIcon={
-          <button
-            type="button"
-            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            className="text-slate-400 hover:text-[#00C48E] transition-colors"
-          >
-            {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-          </button>
-        }
-        error={registerValidation.getError("confirmPassword")}
-        showError={!!registerValidation.shouldShowError("confirmPassword")}
-        onChange={(e) => {
-          if (e.target.value && registerPasswordValue) {
-            if (e.target.value !== registerPasswordValue) {
-              registerValidation.setError("confirmPassword", "Las contraseñas no coinciden");
-            } else {
-              registerValidation.clearFieldError("confirmPassword");
-            }
-          }
-        }}
-        onBlur={() => registerValidation.handleBlur("confirmPassword")}
-      />
-    </>
-  );
-
-  const LoginFormFields = () => (
-    <>
-      <Input
-        id="login-email"
-        name="email"
-        type="email"
-        label="Correo electrónico"
-        placeholder="tu@email.com"
-        required
-        icon={<User size={18} color="#00C48E" />}
-        error={loginValidation.getError("email")}
-        showError={!!loginValidation.shouldShowError("email")}
-        onChange={(e) =>
-          loginValidation.validateField(
-            "email",
-            e.target.value,
-            z.string().email("Ingresa un correo electrónico válido")
-          )
-        }
-        onBlur={() => loginValidation.handleBlur("email")}
-      />
-
-      <Input
-        id="login-password"
-        name="password"
-        type={showPassword ? "text" : "password"}
-        label="Contraseña"
-        placeholder="••••••••"
-        required
-        icon={<Lock size={18} color="#00C48E" />}
-        rightIcon={
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="text-slate-400 hover:text-[#00C48E] transition-colors"
-          >
-            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-          </button>
-        }
-      />
-    </>
-  );
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#132D46] via-[#0F2537] to-[#132D46] p-4 sm:p-6">
@@ -283,7 +353,12 @@ export default function AuthPage() {
             </div>
 
             <div className="space-y-3 sm:space-y-4">
-              <LoginFormFields />
+              <LoginFormFields 
+                isMobile={true} 
+                showPassword={showPassword}
+                setShowPassword={setShowPassword}
+                loginValidation={loginValidation}
+              />
 
               <button
                 type="submit"
@@ -328,7 +403,18 @@ export default function AuthPage() {
             </div>
 
             <div className="space-y-3 sm:space-y-4">
-              <RegisterFormFields />
+              <RegisterFormFields 
+                isMobile={true}
+                showPassword={showPassword}
+                setShowPassword={setShowPassword}
+                showConfirmPassword={showConfirmPassword}
+                setShowConfirmPassword={setShowConfirmPassword}
+                registerPasswordValue={registerPasswordValue}
+                setRegisterPasswordValue={setRegisterPasswordValue}
+                showPasswordRequirements={showPasswordRequirements}
+                setShowPasswordRequirements={setShowPasswordRequirements}
+                registerValidation={registerValidation}
+              />
 
               <button
                 type="submit"
@@ -371,7 +457,18 @@ export default function AuthPage() {
               </div>
 
               <div className="space-y-4">
-                <RegisterFormFields />
+                <RegisterFormFields 
+                  isMobile={false}
+                  showPassword={showPassword}
+                  setShowPassword={setShowPassword}
+                  showConfirmPassword={showConfirmPassword}
+                  setShowConfirmPassword={setShowConfirmPassword}
+                  registerPasswordValue={registerPasswordValue}
+                  setRegisterPasswordValue={setRegisterPasswordValue}
+                  showPasswordRequirements={showPasswordRequirements}
+                  setShowPasswordRequirements={setShowPasswordRequirements}
+                  registerValidation={registerValidation}
+                />
 
                 <button
                   type="submit"
@@ -430,7 +527,12 @@ export default function AuthPage() {
               </div>
 
               <div className="space-y-4">
-                <LoginFormFields />
+                <LoginFormFields 
+                  isMobile={false}
+                  showPassword={showPassword}
+                  setShowPassword={setShowPassword}
+                  loginValidation={loginValidation}
+                />
 
                 <button
                   type="submit"

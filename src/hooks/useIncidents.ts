@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { Incident } from '@/types';
+import { IncidentFull } from '@/types';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 
@@ -13,7 +13,7 @@ interface UseIncidentsOptions {
 }
 
 interface UseIncidentsReturn {
-  incidents: Incident[];
+  incidents: IncidentFull[];
   loading: boolean;
   error: string | null;
   refetch: () => Promise<void>;
@@ -21,7 +21,7 @@ interface UseIncidentsReturn {
 }
 
 export function useIncidents(options: UseIncidentsOptions = {}): UseIncidentsReturn {
-  const [incidents, setIncidents] = useState<Incident[]>([]);
+  const [incidents, setIncidents] = useState<IncidentFull[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [total, setTotal] = useState(0);
@@ -35,21 +35,8 @@ export function useIncidents(options: UseIncidentsOptions = {}): UseIncidentsRet
       const supabase = createClient();
 
       let query = supabase
-        .from('incidents')
-        .select(`
-          *,
-          districts (
-            district_code,
-            district_name,
-            population
-          ),
-          incident_categories (
-            category_id,
-            code,
-            name,
-            icon_url
-          )
-        `, { count: 'exact' })
+        .from('v_incidents_full')
+        .select('*', { count: 'exact' })
         .order('created_at', { ascending: false });
 
       if (options.districtCode) {
@@ -76,7 +63,26 @@ export function useIncidents(options: UseIncidentsOptions = {}): UseIncidentsRet
 
       if (queryError) throw queryError;
 
-      setIncidents(data || []);
+      const safeData = (data || []).map(incident => ({
+        ...incident,
+        reporter_name: incident.reporter_name ?? 'Usuario Desconocido',
+        assignee_name: incident.assignee_name ?? null,
+        updated_by_name: incident.updated_by_name ?? null,
+        category_name: incident.category_name ?? 'Sin categoría',
+        category_code: incident.category_code ?? 'OTHER',
+        district_name: incident.district_name ?? 'Sin distrito',
+        detection_id: incident.detection_id ?? null,
+        yolo_confidence: incident.yolo_confidence ?? null,
+        bounding_box: incident.bounding_box ?? null,
+        model_version: incident.model_version ?? null,
+        num_detecciones: incident.num_detecciones ?? null,
+        url_resultado: incident.url_resultado ?? null,
+        yolo_detected_at: incident.yolo_detected_at ?? null,
+        comment_count: incident.comment_count ?? 0,
+        attachment_count: incident.attachment_count ?? 0,
+      }));
+
+      setIncidents(safeData);
       setTotal(count || 0);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error al cargar incidentes';

@@ -6,6 +6,9 @@ export interface YoloDetection {
   bounding_box: Record<string, unknown> | null;
   model_version: string | null;
   detected_at: string;
+  num_detecciones: number | null;
+  url_resultado: string | null;
+  yolo_response_raw: Record<string, unknown> | null;
 }
 
 export interface YoloDetectionInsert {
@@ -14,4 +17,7 @@ export interface YoloDetectionInsert {
   confidence: number;
   bounding_box?: Record<string, unknown> | null;
   model_version?: string | null;
+  num_detecciones?: number | null;
+  url_resultado?: string | null;
+  yolo_response_raw?: Record<string, unknown> | null;
 }

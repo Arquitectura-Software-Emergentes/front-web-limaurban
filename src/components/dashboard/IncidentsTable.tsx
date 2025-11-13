@@ -97,7 +97,8 @@ export default function IncidentsTable() {
       if (filters.distrito && incident.district_code !== filters.distrito) return false;
       if (filters.estado && incident.status !== filters.estado) return false;
       if (filters.prioridad && incident.priority !== filters.prioridad) return false;
-      if (filters.tipo && incident.incident_categories?.code !== filters.tipo) return false;
+      const categoryCode = incident.category_code;
+      if (filters.tipo && categoryCode !== filters.tipo) return false;
       if (filters.fecha) {
         const filterDate = filters.fecha;
         const incidentDate = incident.created_at.split('T')[0];
@@ -200,7 +201,7 @@ export default function IncidentsTable() {
                     {`IN-${incident.incident_id.slice(0, 8).toUpperCase()}`}
                   </p>
                   <h3 className="text-base font-semibold text-[#E5E7EB] group-hover:text-[#559BDE] transition-colors">
-                    {incident.incident_categories?.name || 'N/A'}
+                    {incident.category_name}
                   </h3>
                 </div>
                 <span className={getStatusColor(incident.status)}>
@@ -214,7 +215,9 @@ export default function IncidentsTable() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
-                  <span className="font-medium">{incident.districts?.district_name || incident.district_code}</span>
+                  <span className="font-medium">
+                    {incident.district_name}
+                  </span>
                 </div>
                 
                 <div className="flex items-center justify-between text-sm border-t border-[#1F2937] pt-2.5">
@@ -286,10 +289,10 @@ export default function IncidentsTable() {
                       {`IN-${incident.incident_id.slice(0, 8).toUpperCase()}`}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-[#E5E7EB] group-hover:text-[#559BDE] transition-colors">
-                      {incident.districts?.district_name || incident.district_code}
+                      {incident.district_name}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-[#E5E7EB]">
-                      {incident.incident_categories?.name || 'N/A'}
+                      {incident.category_name}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <span className={getPriorityBadge(incident.priority)}>

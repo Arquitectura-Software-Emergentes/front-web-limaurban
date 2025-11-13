@@ -42,6 +42,7 @@ export interface IncidentCluster {
   district_code: string | null;
   incident_ids: string[];
   created_at: string;
+  avg_confidence: number | null;
 }
 
 export interface CreateHeatmapRequest {
