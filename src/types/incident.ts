@@ -37,6 +37,9 @@ export interface Incident {
   resolved_at: string | null;
   created_at: string;
   updated_at: string;
+  ai_detected_category: string | null;
+  ai_confidence: number | null;
+  updated_by: string | null;
   districts?: District;
   incident_categories?: IncidentCategory;
   comments?: Comment[];
@@ -47,6 +50,12 @@ export interface Incident {
     user_type: 'CITIZEN' | 'MUNICIPALITY_STAFF';
   } | null;
   assigned_to_user?: {
+    id: string;
+    full_name: string;
+    phone: string | null;
+    user_type: 'CITIZEN' | 'MUNICIPALITY_STAFF';
+  } | null;
+  updated_by_user?: {
     id: string;
     full_name: string;
     phone: string | null;
@@ -87,4 +96,23 @@ export interface IncidentUpdate {
   duplicate_of?: string | null;
   resolved_at?: string | null;
   updated_at?: string;
+  updated_by?: string;
+}
+
+export interface IncidentFull extends Incident {
+  reporter_name: string;
+  assignee_name: string | null;
+  updated_by_name: string | null;
+  category_name: string;
+  category_code: string;
+  district_name: string;
+  detection_id: string | null;
+  yolo_confidence: number | null;
+  bounding_box: Record<string, unknown> | null;
+  model_version: string | null;
+  num_detecciones: number | null;
+  url_resultado: string | null;
+  yolo_detected_at: string | null;
+  comment_count: number;
+  attachment_count: number;
 }
