@@ -9,7 +9,7 @@ import { useFormValidation } from "@/hooks/useFormValidation";
 import { PasswordRequirements } from "@/components/auth/PasswordRequirements";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
-import { RoleType } from "@/types";
+import { Role } from "@/types";
 import { loginSchema, registerSchema, passwordSchema } from "@/types/schemas";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -307,7 +307,7 @@ export default function AuthPage() {
       confirmPassword: formData.get("confirmPassword") as string,
       fullName: formData.get("fullName") as string,
       phone: formData.get("phone") as string,
-      userType: (formData.get("userType") as RoleType) || "CITIZEN",
+      userType: (formData.get("userType") as Role) || "CITIZEN",
     };
 
     const validation = registerSchema.safeParse(data);

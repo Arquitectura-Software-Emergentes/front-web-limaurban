@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { User, Lock, Eye, EyeOff, Mail, Phone, UserCircle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { RoleType } from "@/types";
+import { Role } from "@/types";
 import { registerSchema } from "@/types/schemas";
 import { toast } from "sonner";
 
@@ -24,7 +24,7 @@ export default function RegisterForm() {
       confirmPassword: formData.get("confirmPassword") as string,
       fullName: formData.get("fullName") as string,
       phone: formData.get("phone") as string,
-      userType: (formData.get("userType") as RoleType) || 'CITIZEN',
+      userType: (formData.get("userType") as Role) || 'CITIZEN',
     };
 
     const validation = registerSchema.safeParse(data);

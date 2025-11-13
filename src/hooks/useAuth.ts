@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { login as loginAction, register as registerAction, logout as logoutAction } from '@/actions/auth.actions';
-import { RoleType } from '@/types';
+import { Role } from '@/types';
 
 interface LoginCredentials {
   email: string;
@@ -13,7 +13,7 @@ interface RegisterData {
   password: string;
   fullName: string;
   phone?: string;
-  role: RoleType;
+  role: Role;
 }
 
 export function useAuth() {

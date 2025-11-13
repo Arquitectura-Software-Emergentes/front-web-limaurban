@@ -58,7 +58,7 @@ export function useIncident(incidentId: string | null): UseIncidentReturn {
       if (data?.reported_by) {
         const { data: userData, error: userError } = await supabase
           .from('users')
-          .select('id, full_name, phone, role_id, roles(code)')
+          .select('id, full_name, phone, role_id, role:roles!role_id(code)')
           .eq('id', data.reported_by)
           .single();
         
@@ -72,7 +72,7 @@ export function useIncident(incidentId: string | null): UseIncidentReturn {
       if (data?.assigned_to) {
         const { data: userData, error: userError } = await supabase
           .from('users')
-          .select('id, full_name, phone, role_id, roles(code)')
+          .select('id, full_name, phone, role_id, role:roles!role_id(code)')
           .eq('id', data.assigned_to)
           .single();
         
@@ -97,7 +97,7 @@ export function useIncident(incidentId: string | null): UseIncidentReturn {
             full_name,
             phone,
             role_id,
-            roles(code)
+            role:roles!role_id(code)
           )
         `)
         .eq('incident_id', incidentId)

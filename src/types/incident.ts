@@ -15,7 +15,7 @@ export interface Comment {
     full_name: string;
     phone: string | null;
     role_id: string;
-    roles?: {
+    role?: {
       code: 'CITIZEN' | 'MUNICIPALITY_STAFF';
     };
   };
@@ -51,7 +51,7 @@ export interface Incident {
     full_name: string;
     phone: string | null;
     role_id: string;
-    roles?: {
+    role?: {
       code: 'CITIZEN' | 'MUNICIPALITY_STAFF';
     };
   } | null;
@@ -60,7 +60,7 @@ export interface Incident {
     full_name: string;
     phone: string | null;
     role_id: string;
-    roles?: {
+    role?: {
       code: 'CITIZEN' | 'MUNICIPALITY_STAFF';
     };
   } | null;
@@ -69,7 +69,7 @@ export interface Incident {
     full_name: string;
     phone: string | null;
     role_id: string;
-    roles?: {
+    role?: {
       code: 'CITIZEN' | 'MUNICIPALITY_STAFF';
     };
   } | null;
