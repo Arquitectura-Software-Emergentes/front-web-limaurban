@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
-import { UserType } from "@/types";
+import { RoleType } from "@/types";
 
 interface LoginCredentials {
   email: string;
@@ -14,7 +14,7 @@ interface RegisterData {
   password: string;
   fullName: string;
   phone?: string;
-  userType: UserType;
+  role: RoleType;
 }
 
 export async function login(credentials: LoginCredentials) {
@@ -49,7 +49,7 @@ export async function register(data: RegisterData) {
       data: {
         full_name: data.fullName,
         phone: data.phone || null,
-        user_type: data.userType,
+        role: data.role,
       },
     },
   });

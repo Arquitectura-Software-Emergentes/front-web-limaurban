@@ -1,4 +1,4 @@
-export type UserType = 'CITIZEN' | 'MUNICIPALITY_STAFF';
+export type Role = 'CITIZEN' | 'MUNICIPALITY_STAFF';
 
 export type IncidentStatus = 'pending' | 'in_review' | 'in_progress' | 'resolved' | 'closed' | 'rejected';
 

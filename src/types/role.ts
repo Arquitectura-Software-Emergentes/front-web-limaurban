@@ -1,4 +1,4 @@
-export interface Role {
+export interface RoleType {
   role_id: string;
   code: string;
   description: string | null;

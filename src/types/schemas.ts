@@ -33,7 +33,7 @@ export const registerSchema = z.object({
     .regex(/^[0-9]{9}$/, 'El teléfono debe tener exactamente 9 dígitos')
     .optional()
     .or(z.literal('')),
-  userType: z.enum(['CITIZEN', 'MUNICIPALITY_STAFF'] as const),
+  role: z.enum(['CITIZEN', 'MUNICIPALITY_STAFF'] as const),
   password: passwordSchema,
   confirmPassword: z.string().min(1, 'Confirma tu contraseña'),
 }).refine((data) => data.password === data.confirmPassword, {

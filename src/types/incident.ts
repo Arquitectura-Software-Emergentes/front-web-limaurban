@@ -14,7 +14,10 @@ export interface Comment {
     id: string;
     full_name: string;
     phone: string | null;
-    user_type: 'CITIZEN' | 'MUNICIPALITY_STAFF';
+    role_id: string;
+    roles?: {
+      code: 'CITIZEN' | 'MUNICIPALITY_STAFF';
+    };
   };
 }
 
@@ -47,19 +50,28 @@ export interface Incident {
     id: string;
     full_name: string;
     phone: string | null;
-    user_type: 'CITIZEN' | 'MUNICIPALITY_STAFF';
+    role_id: string;
+    roles?: {
+      code: 'CITIZEN' | 'MUNICIPALITY_STAFF';
+    };
   } | null;
   assigned_to_user?: {
     id: string;
     full_name: string;
     phone: string | null;
-    user_type: 'CITIZEN' | 'MUNICIPALITY_STAFF';
+    role_id: string;
+    roles?: {
+      code: 'CITIZEN' | 'MUNICIPALITY_STAFF';
+    };
   } | null;
   updated_by_user?: {
     id: string;
     full_name: string;
     phone: string | null;
-    user_type: 'CITIZEN' | 'MUNICIPALITY_STAFF';
+    role_id: string;
+    roles?: {
+      code: 'CITIZEN' | 'MUNICIPALITY_STAFF';
+    };
   } | null;
 }
 
