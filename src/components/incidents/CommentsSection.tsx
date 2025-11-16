@@ -1,6 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createClient } from '@/lib/supabase/client';
 import { useComments } from '@/hooks/useComments';
 import { Comment } from '@/types';
 
@@ -14,12 +17,167 @@ const formatDate = (dateString: string) => {
 
 interface CommentsSectionProps {
   incidentId: string;
-  comments: Comment[];
 }
 
-export default function CommentsSection({ incidentId, comments }: CommentsSectionProps) {
+export default function CommentsSection({ incidentId }: CommentsSectionProps) {
   const [newComment, setNewComment] = useState('');
+  const [localComments, setLocalComments] = useState<Comment[]>([]);
+  const [loadingComments, setLoadingComments] = useState(true);
   const { createComment, loading } = useComments();
+
+  // Fetch comments on mount
+  useEffect(() => {
+    const fetchComments = async () => {
+      const supabase = createClient();
+      
+      const { data, error } = await supabase
+        .from('comments')
+        .select(`
+          comment_id,
+          incident_id,
+          author_id,
+          content,
+          is_internal,
+          created_at,
+          updated_at,
+          users (
+            id,
+            full_name,
+            phone,
+            role_id,
+            role:roles!role_id(code)
+          )
+        `)
+        .eq('incident_id', incidentId)
+        .order('created_at', { ascending: true });
+
+      if (error) {
+        console.error('Error fetching comments:', error);
+      } else {
+        setLocalComments(data as any);
+      }
+      
+      setLoadingComments(false);
+    };
+
+    fetchComments();
+  }, [incidentId]);
+
+  // Set up real-time subscription for comments (INSERT, UPDATE, DELETE)
+  useEffect(() => {
+    const supabase = createClient();
+
+    console.log('🔔 CommentsSection: Setting up real-time for incident:', incidentId);
+
+    const channel = supabase
+      .channel(`comments-${incidentId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'comments',
+          filter: `incident_id=eq.${incidentId}`,
+        },
+        async (payload) => {
+          console.log('💬 INSERT - New comment received:', payload);
+
+          // Fetch the complete comment with user info
+          const { data: newCommentData } = await supabase
+            .from('comments')
+            .select(`
+              comment_id,
+              incident_id,
+              author_id,
+              content,
+              is_internal,
+              created_at,
+              updated_at,
+              users (
+                id,
+                full_name,
+                phone,
+                role_id,
+                role:roles!role_id(code)
+              )
+            `)
+            .eq('comment_id', payload.new.comment_id)
+            .single();
+
+          if (newCommentData) {
+            setLocalComments((prev) => [...prev, newCommentData as any]);
+          }
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'comments',
+          filter: `incident_id=eq.${incidentId}`,
+        },
+        async (payload) => {
+          console.log('✏️ UPDATE - Comment updated:', payload);
+
+          // Fetch updated comment with user info
+          const { data: updatedCommentData } = await supabase
+            .from('comments')
+            .select(`
+              comment_id,
+              incident_id,
+              author_id,
+              content,
+              is_internal,
+              created_at,
+              updated_at,
+              users (
+                id,
+                full_name,
+                phone,
+                role_id,
+                role:roles!role_id(code)
+              )
+            `)
+            .eq('comment_id', payload.new.comment_id)
+            .single();
+
+          if (updatedCommentData) {
+            setLocalComments((prev) =>
+              prev.map((comment) =>
+                comment.comment_id === updatedCommentData.comment_id
+                  ? (updatedCommentData as any)
+                  : comment
+              )
+            );
+          }
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'comments',
+          filter: `incident_id=eq.${incidentId}`,
+        },
+        (payload) => {
+          console.log('🗑️ DELETE - Comment deleted:', payload);
+
+          // Remove deleted comment from local state
+          setLocalComments((prev) =>
+            prev.filter((comment) => comment.comment_id !== payload.old.comment_id)
+          );
+        }
+      )
+      .subscribe((status) => {
+        console.log('📡 Comments subscription status:', status);
+      });
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [incidentId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,7 +191,7 @@ export default function CommentsSection({ incidentId, comments }: CommentsSectio
 
     if (success) {
       setNewComment('');
-      window.location.reload();
+      // Real-time will update localComments automatically
     }
   };
 
@@ -43,8 +201,8 @@ export default function CommentsSection({ incidentId, comments }: CommentsSectio
       
       {/* Lista de comentarios */}
       <div className="space-y-4 mb-6">
-        {comments && comments.length > 0 ? (
-          comments.map((comment) => (
+        {localComments && localComments.length > 0 ? (
+          localComments.map((comment) => (
             <div key={comment.comment_id} className="border-b border-[#345473] pb-4">
               <div className="flex justify-between items-start mb-2">
                 <div>

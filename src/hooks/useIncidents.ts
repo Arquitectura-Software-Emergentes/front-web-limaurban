@@ -61,6 +61,12 @@ export function useIncidents(options: UseIncidentsOptions = {}): UseIncidentsRet
 
       const { data, error: queryError, count } = await query;
 
+      console.log('🔍 useIncidents - Raw Supabase response:', {
+        firstIncident: data?.[0],
+        hasUrlResultado: data?.[0]?.url_resultado !== undefined,
+        urlResultadoValue: data?.[0]?.url_resultado,
+      });
+
       if (queryError) throw queryError;
 
       const safeData = (data || []).map(incident => ({

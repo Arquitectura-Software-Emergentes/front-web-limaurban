@@ -69,10 +69,7 @@ export default function IncidentDetailPage() {
 
       {/* Content */}
       <IncidentCard incident={incident} />
-      <CommentsSection 
-        incidentId={incidentId} 
-        comments={incident.comments || []} 
-      />
+      <CommentsSection incidentId={incidentId} />
     </div>
   );
 }

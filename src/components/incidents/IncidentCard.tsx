@@ -1,6 +1,6 @@
 import React from 'react';
-import Image from 'next/image';
 import { Incident, IncidentFull } from '@/types';
+import ImageCarousel from './ImageCarousel';
 
 type IncidentCardIncident = Incident | IncidentFull;
 
@@ -74,30 +74,18 @@ export default function IncidentCard({ incident }: IncidentCardProps) {
     ? (incident.assignee_name ?? 'Sin asignar') 
     : (incident.assigned_to_user?.full_name ?? incident.assigned_to_user?.phone ?? 'Sin asignar')) as string;
 
+  const yoloResultUrl = ('url_resultado' in incident) ? incident.url_resultado : null;
+
   return (
     <div className="bg-[#0B0F19] border border-[#345473] rounded-lg p-4 sm:p-6 mb-6">
-      {/* Mobile: Image first */}
-      {incident.photo_url ? (
-        <div className="relative w-full h-64 sm:h-80 rounded-lg overflow-hidden mb-6">
-          <Image
-            src={incident.photo_url}
-            alt="Imagen del incidente"
-            fill
-            sizes="(max-width: 768px) 100vw, 800px"
-            className="object-cover"
-            priority
-          />
-        </div>
-      ) : (
-        <div className="w-full h-64 sm:h-80 bg-[#1A1E29] border-2 border-dashed border-[#345473] rounded-lg flex items-center justify-center mb-6">
-          <div className="text-center">
-            <svg className="mx-auto h-12 w-12 text-[#345473] mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <p className="text-[#6B7280] text-sm">Sin imagen</p>
-          </div>
-        </div>
-      )}
+      {/* Image Carousel */}
+      <div className="mb-6">
+        <ImageCarousel 
+          photoUrl={incident.photo_url}
+          yoloResultUrl={yoloResultUrl}
+          altText="Imagen del incidente"
+        />
+      </div>
 
       {/* Info Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
